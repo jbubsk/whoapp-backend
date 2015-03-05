@@ -1,6 +1,7 @@
 var express = require('express'),
     app = express(),
     http = require('http'),
+    server = http.createServer(app),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
@@ -14,7 +15,8 @@ var express = require('express'),
     logger = require('./src/logger-winston'),
     port = process.env.PORT || 8000,
     config = require('./src/config'),
-    common = require('./src/common');
+    common = require('./src/common'),
+    sockets = require('./src/sockets');
 
 mkdirp('./logs', function (err) {
     if (err) {
@@ -65,6 +67,8 @@ app.use(session({
 
 app.use('/api', router);
 
+sockets.setupListeners(server);
+
 module.exports = {
     disconnectDB: function () {
         mongoose.disconnect();
@@ -82,10 +86,10 @@ module.exports = {
     },
     stopApp: function () {
         http.close();
-        logger.info('*** HTTP Server is closed ***');
+        logger.info('*** HTTP Server is stopped ***');
     },
     startExpress: function () {
-        http.createServer(app).listen(port);
+        server.listen(port);
         logger.info('*** HTTP Server is started listening ' + port + ' ***');
     },
     instance: function () {
