@@ -3,7 +3,7 @@ var socketIO = require('socket.io');
 module.exports = {
     setupListeners: function (server) {
         var io = socketIO(server);
-
+        io.set('origins', '*:*');
         io.on('connection', function (socket) {
             socket.on('user:connected', function (username) {
                 io.emit('user:connected', 'user ' + username + ' is connected');
