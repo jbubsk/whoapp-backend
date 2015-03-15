@@ -29,6 +29,7 @@ accessLogStream = fs.createWriteStream(__dirname + '/logs/access.log', {
 });
 
 app.use(function (req, res, next) {
+    
     console.info('x-forwarded-for: ' + req.headers['x-forwarded-for']);
     console.info('user-agent: ' + req.headers['user-agent']);
     res.header("Access-Control-Allow-Credentials", true);
