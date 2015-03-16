@@ -6,14 +6,9 @@ var request = require('supertest'),
     should = chai.should();
 
 
-describe("DB suites -> ", function () {
+describe.skip("DB suites -> ", function () {
     var application = require('../application'),
-        periodService = require('../src/services/periods'),
-        budgetService = require('../src/services/budget'),
-        categoryService = require('../src/services/category'),
         User = require('../src/models/user'),
-        Budget = require('../src/models/budget'),
-        Category = require('../src/models/category'),
         user,
         userId_1,
         userId_2;
