@@ -19,16 +19,22 @@ module.exports = {
             }
             date = new Date(month + '.' + day + '.' + year).getTime();
         }
-        if(typeof ddMMyyyy === 'number'){
+        if (typeof ddMMyyyy === 'number') {
             date = ddMMyyyy;
         }
         return date;
     },
 
     getConnectionName: function () {
-        return config.dbConnections[process.env.DB_CONNECTION];
+        if (process.env.DB_CONNECTION) {
+
+            return config.dbConnections[process.env.DB_CONNECTION];
+        } else {
+            console.warn("`DB_CONNECTION` env variable isn't found");
+        }
+        return dbConnection;
     },
-    
+
     getMongoObjectId: function (hash) {
         return new ObjectID(hash);
     }
