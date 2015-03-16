@@ -27,7 +27,6 @@ module.exports = {
 
     getConnectionName: function () {
         if (process.env.DB_CONNECTION) {
-
             return config.dbConnections[process.env.DB_CONNECTION];
         } else {
             console.warn("`DB_CONNECTION` env variable isn't found");

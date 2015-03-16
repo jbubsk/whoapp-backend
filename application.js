@@ -14,6 +14,7 @@ var express = require('express'),
     loggerFormat = ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status length: :res[content-length] ":referrer" ":user-agent"',
     logger = require('./src/logger-winston'),
     port = process.env.PORT || 8000,
+    ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
     config = require('./src/config'),
     common = require('./src/common'),
     sockets = require('./src/sockets');
@@ -91,7 +92,7 @@ module.exports = {
         logger.info('*** HTTP Server is stopped ***');
     },
     startExpress: function () {
-        server.listen(port);
+        server.listen(port, ipaddress);
         logger.info('*** HTTP Server is started listening ' + port + ' ***');
     },
     instance: function () {
