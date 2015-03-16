@@ -93,7 +93,6 @@ module.exports = {
     },
     startExpress: function () {
         server.listen(port, ipaddress);
-        server.listen(port);
         logger.info('*** HTTP Server is started listening ' + port + ' ***');
     },
     instance: function () {
