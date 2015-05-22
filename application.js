@@ -62,8 +62,8 @@ app.use(cookieParser());
 
 app.use(session({
     name: config.sessionIdCookie,
-    domain: '192.168.9.144',
-    secret: 'jbusiki',
+    //domain: '192.168.9.144',
+    secret: 'FtrEE55ht0',
     resave: false,
     saveUninitialized: true
 }));
