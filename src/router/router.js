@@ -1,12 +1,12 @@
 var express = require('express'),
     router = express.Router(),
-    registration = require('./routes/registration'),
+    registration = require('./../routes/registration/index'),
     authorization = require('./routes/authorization'),
-    login = require('./routes/login'),
-    logout = require('./routes/logout'),
-    getRemoteLocation = require('./routes/get-remote-location'),
-    shareLocation = require('./routes/share-location'),
-    logger = require('./logger-winston');
+    login = require('./../routes/login/index'),
+    logout = require('./../routes/logout/index'),
+    getRemoteLocation = require('./../routes/get-remote-location/index'),
+    shareLocation = require('./../routes/share-location/index'),
+    logger = require('./../logger-winston');
 
 router.use(function (req, res, next) {
     next();

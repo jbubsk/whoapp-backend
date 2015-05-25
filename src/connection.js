@@ -1,4 +1,5 @@
 var mysql = require('mysql'),
+    sequelize = require('sequelize'),
     database = require('./config').database,
     connection = mysql.createConnection({
         host: database.host[process.env.NODE_ENV],
