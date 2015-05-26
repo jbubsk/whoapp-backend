@@ -16,17 +16,18 @@
     "winston": "~0.8.3"
   },
   "scripts": {
-    "start": "npm run build",
-    "prod": "node server.js",
-    "dev": "NODE_ENV=development node server.js",
-    "dev_debug": "NODE_ENV=development node --debug=5858 server.js",
-    "dev_debug_start": "NODE_ENV=development node --debug-brk=5858 server.js",
+    "start": "node server.js",
+    "start_dev": "NODE_ENV=development node server.js",
+    "start_dev_debug": "NODE_ENV=development node --debug=5858 server.js",
+    "start_dev_debug_brk": "NODE_ENV=development node --debug-brk=5858 server.js",
+    "prebuild": "echo ********************** prebuild **********************",
     "build": "echo ********************** build **********************",
-    "prebuild" : "echo ********************** prebuild **********************",
-    "postbuild" : "echo ********************** postbuild **********************",
+    "postbuild": "echo ********************** postbuild **********************",
+    "preinstall": "echo ********************** preinstall **********************",
+    "install": "echo ********************** install **********************",
     "postinstall": "echo ********************** postinstall **********************",
-    "postpublish": "echo ********************** postpublish **********************",
-    "preipublish": "echo ********************** preipublish **********************",
-    "preinstall": "echo ********************** preinstall **********************"
+    "prepublish": "echo ********************** prepublish **********************",
+    "publish": "echo ********************** publish **********************",
+    "postpublish": "echo ********************** postpublish **********************"
   }
 }
