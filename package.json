@@ -16,18 +16,9 @@
     "winston": "~0.8.3"
   },
   "scripts": {
-    "start": "node server.js",
     "start_dev": "NODE_ENV=development node server.js",
     "start_dev_debug": "NODE_ENV=development node --debug=5858 server.js",
     "start_dev_debug_brk": "NODE_ENV=development node --debug-brk=5858 server.js",
-    "prebuild": "echo ********************** prebuild **********************",
-    "build": "echo ********************** build **********************",
-    "postbuild": "echo ********************** postbuild **********************",
-    "preinstall": "echo ********************** preinstall **********************",
-    "install": "echo ********************** install **********************",
-    "postinstall": "echo ********************** postinstall **********************",
-    "prepublish": "echo ********************** prepublish **********************",
-    "publish": "echo ********************** publish **********************",
-    "postpublish": "echo ********************** postpublish **********************"
+    "postinstall": "NODE_ENV=development"
   }
 }
