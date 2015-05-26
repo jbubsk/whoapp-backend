@@ -3,24 +3,24 @@
 -- Model: New Model    Version: 1.0
 -- MySQL Workbench Forward Engineering
 
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema whoapp_test
+-- Schema whoapp_dev
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema whoapp_test
+-- Schema whoapp_dev
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `whoapp_test` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `whoapp_test` ;
+CREATE SCHEMA IF NOT EXISTS `whoapp_dev` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `whoapp_dev` ;
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`user_status`
+-- Table `whoapp_dev`.`user_status`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`user_status` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`user_status` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
@@ -29,25 +29,26 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`roles_group`
+-- Table `whoapp_dev`.`roles_group`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`roles_group` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`roles_group` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC))
+  UNIQUE INDEX `name` (`name` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`user`
+-- Table `whoapp_dev`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`user` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(30) NOT NULL,
   `password` VARCHAR(100) NOT NULL,
+  `salt` VARCHAR(100) NOT NULL,
   `date_creation` MEDIUMTEXT NOT NULL,
   `network_status` TINYINT(1) NOT NULL,
   `last_date_activity` MEDIUMTEXT NOT NULL,
@@ -59,12 +60,12 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`user` (
   INDEX `fk_users_roles_groups1_idx` (`roles_group_id` ASC),
   CONSTRAINT `fk_users_user_status1`
     FOREIGN KEY (`user_status_id`)
-    REFERENCES `whoapp_test`.`user_status` (`id`)
+    REFERENCES `whoapp_dev`.`user_status` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_roles_groups1`
     FOREIGN KEY (`roles_group_id`)
-    REFERENCES `whoapp_test`.`roles_group` (`id`)
+    REFERENCES `whoapp_dev`.`roles_group` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -73,9 +74,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`country`
+-- Table `whoapp_dev`.`country`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`country` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`country` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name_ru` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
@@ -85,9 +86,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`city`
+-- Table `whoapp_dev`.`city`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`city` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`city` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name_ru` VARCHAR(45) NULL,
   `district_ru` VARCHAR(75) NULL,
@@ -96,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`city` (
   INDEX `fk_city_country1_idx` (`country_id` ASC),
   CONSTRAINT `fk_city_country1`
     FOREIGN KEY (`country_id`)
-    REFERENCES `whoapp_test`.`country` (`id`)
+    REFERENCES `whoapp_dev`.`country` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -105,9 +106,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`user_details`
+-- Table `whoapp_dev`.`user_details`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`user_details` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`user_details` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(45) NULL DEFAULT NULL,
   `last_name` VARCHAR(45) NULL DEFAULT NULL,
@@ -119,20 +120,20 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`user_details` (
   `city_id` INT NULL DEFAULT NULL,
   `user_id` INT NOT NULL,
   PRIMARY KEY (`id`, `user_id`),
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC),
-  UNIQUE INDEX `phone_number_UNIQUE` (`phone_number` ASC),
+  UNIQUE INDEX `email` (`email` ASC),
+  UNIQUE INDEX `phone_number` (`phone_number` ASC),
   INDEX `fk_user_details_users1_idx` (`user_id` ASC),
-  UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  UNIQUE INDEX `user_id` (`user_id` ASC),
+  UNIQUE INDEX `id` (`id` ASC),
   INDEX `fk_city_idx` (`city_id` ASC),
   CONSTRAINT `fk_user`
     FOREIGN KEY (`user_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_city`
     FOREIGN KEY (`city_id`)
-    REFERENCES `whoapp_test`.`city` (`id`)
+    REFERENCES `whoapp_dev`.`city` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -141,9 +142,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`place_status`
+-- Table `whoapp_dev`.`place_status`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`place_status` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`place_status` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
@@ -153,9 +154,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`place`
+-- Table `whoapp_dev`.`place`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`place` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`place` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(50) NOT NULL,
   `place_status_id` INT NOT NULL,
@@ -164,7 +165,7 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`place` (
   INDEX `name_index` (`name` ASC),
   CONSTRAINT `fk_place_place_status1`
     FOREIGN KEY (`place_status_id`)
-    REFERENCES `whoapp_test`.`place_status` (`id`)
+    REFERENCES `whoapp_dev`.`place_status` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -173,9 +174,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`location`
+-- Table `whoapp_dev`.`location`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`location` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`location` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `latitude` DOUBLE NOT NULL,
   `longitude` DOUBLE NOT NULL,
@@ -184,16 +185,16 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`location` (
   PRIMARY KEY (`id`),
   INDEX `fk_location_place_idx` (`place_id` ASC),
   INDEX `fk_location_users_idx` (`user_id` ASC),
-  UNIQUE INDEX `place_id_UNIQUE` (`place_id` ASC),
-  UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC),
+  UNIQUE INDEX `place_id` (`place_id` ASC),
+  UNIQUE INDEX `user_id` (`user_id` ASC),
   CONSTRAINT `fk_location_place`
     FOREIGN KEY (`place_id`)
-    REFERENCES `whoapp_test`.`place` (`id`)
+    REFERENCES `whoapp_dev`.`place` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_location_user`
     FOREIGN KEY (`user_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -202,9 +203,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`place_details`
+-- Table `whoapp_dev`.`place_details`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`place_details` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`place_details` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `description` TEXT(350) NOT NULL,
   `address` VARCHAR(100) NOT NULL,
@@ -218,12 +219,12 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`place_details` (
   INDEX `fk_place_details_city1_idx` (`city_id` ASC),
   CONSTRAINT `fk_place_details_place1`
     FOREIGN KEY (`place_id`)
-    REFERENCES `whoapp_test`.`place` (`id`)
+    REFERENCES `whoapp_dev`.`place` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_place_details_city1`
     FOREIGN KEY (`city_id`)
-    REFERENCES `whoapp_test`.`city` (`id`)
+    REFERENCES `whoapp_dev`.`city` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -232,9 +233,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`activity`
+-- Table `whoapp_dev`.`activity`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`activity` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`activity` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `initiator_id` INT NOT NULL,
   `participant_id` INT NULL DEFAULT NULL,
@@ -247,17 +248,17 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`activity` (
   INDEX `fk_activity_place1_idx` (`place_id` ASC),
   CONSTRAINT `fk_initiator_id`
     FOREIGN KEY (`initiator_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_participant_id`
     FOREIGN KEY (`participant_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_activity_place1`
     FOREIGN KEY (`place_id`)
-    REFERENCES `whoapp_test`.`place` (`id`)
+    REFERENCES `whoapp_dev`.`place` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -266,23 +267,23 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`interest`
+-- Table `whoapp_dev`.`interest`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`interest` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`interest` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `name_index` (`name` ASC),
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC))
+  UNIQUE INDEX `name` (`name` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`user_persistent_interest`
+-- Table `whoapp_dev`.`user_persistent_interest`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`user_persistent_interest` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`user_persistent_interest` (
   `users_id` INT NOT NULL,
   `interests_id` INT NOT NULL,
   PRIMARY KEY (`users_id`, `interests_id`),
@@ -290,12 +291,12 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`user_persistent_interest` (
   INDEX `fk_users_persistent_interest_interests1_idx` (`interests_id` ASC),
   CONSTRAINT `fk_users_persistent_interest_users1`
     FOREIGN KEY (`users_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_persistent_interest_interests1`
     FOREIGN KEY (`interests_id`)
-    REFERENCES `whoapp_test`.`interest` (`id`)
+    REFERENCES `whoapp_dev`.`interest` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -304,9 +305,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`user_current_interest`
+-- Table `whoapp_dev`.`user_current_interest`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`user_current_interest` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`user_current_interest` (
   `user_id` INT NOT NULL,
   `interest_id` INT NOT NULL,
   `activity_time` MEDIUMTEXT NOT NULL,
@@ -315,12 +316,12 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`user_current_interest` (
   INDEX `fk_users_current_interests_interests1_idx` (`interest_id` ASC),
   CONSTRAINT `fk_users_current_interests_users1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_current_interests_interests1`
     FOREIGN KEY (`interest_id`)
-    REFERENCES `whoapp_test`.`interest` (`id`)
+    REFERENCES `whoapp_dev`.`interest` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -329,9 +330,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`place_interest`
+-- Table `whoapp_dev`.`place_interest`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`place_interest` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`place_interest` (
   `place_id` INT NOT NULL,
   `interests_id` INT NOT NULL,
   PRIMARY KEY (`place_id`, `interests_id`),
@@ -339,12 +340,12 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`place_interest` (
   INDEX `fk_place_interests_interests1_idx` (`interests_id` ASC),
   CONSTRAINT `fk_place_interests_place1`
     FOREIGN KEY (`place_id`)
-    REFERENCES `whoapp_test`.`place` (`id`)
+    REFERENCES `whoapp_dev`.`place` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_place_interests_interests1`
     FOREIGN KEY (`interests_id`)
-    REFERENCES `whoapp_test`.`interest` (`id`)
+    REFERENCES `whoapp_dev`.`interest` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -353,9 +354,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`rating`
+-- Table `whoapp_dev`.`rating`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`rating` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`rating` (
   `user_id` INT NOT NULL,
   `place_id` INT NOT NULL,
   `value` INT NOT NULL,
@@ -364,12 +365,12 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`rating` (
   INDEX `fk_ratings_place1_idx` (`place_id` ASC),
   CONSTRAINT `fk_ratings_users1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ratings_place1`
     FOREIGN KEY (`place_id`)
-    REFERENCES `whoapp_test`.`place` (`id`)
+    REFERENCES `whoapp_dev`.`place` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -378,21 +379,21 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`friend`
+-- Table `whoapp_dev`.`friend`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`friend` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`friend` (
   `user_id` INT NOT NULL,
   `friend_id` INT NOT NULL,
   PRIMARY KEY (`user_id`, `friend_id`),
   INDEX `fk_firends_users2_idx` (`friend_id` ASC),
   CONSTRAINT `fk_firends_users1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_firends_users2`
     FOREIGN KEY (`friend_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -401,9 +402,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`friends_request`
+-- Table `whoapp_dev`.`friends_request`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`friends_request` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`friends_request` (
   `initiator_user_id` INT NOT NULL,
   `target_user_id` INT NOT NULL,
   PRIMARY KEY (`initiator_user_id`, `target_user_id`),
@@ -411,12 +412,12 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`friends_request` (
   INDEX `fk_friends_requests_users2_idx` (`target_user_id` ASC),
   CONSTRAINT `fk_friends_requests_users1`
     FOREIGN KEY (`initiator_user_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_friends_requests_users2`
     FOREIGN KEY (`target_user_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -425,9 +426,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`message`
+-- Table `whoapp_dev`.`message`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`message` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`message` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `body` VARCHAR(255) NOT NULL,
   `recipient_id` INT NULL DEFAULT NULL,
@@ -438,7 +439,7 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`message` (
   INDEX `fk_messages_users1_idx` (`sender_id` ASC),
   CONSTRAINT `fk_messages_users1`
     FOREIGN KEY (`sender_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -447,9 +448,9 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`search_request`
+-- Table `whoapp_dev`.`search_request`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`search_request` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`search_request` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `requestor_id` INT NOT NULL,
   `interest_id` INT NULL DEFAULT NULL,
@@ -461,12 +462,12 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`search_request` (
   INDEX `fk_search_request_interest_idx` (`interest_id` ASC),
   CONSTRAINT `fk_request_user`
     FOREIGN KEY (`user_id`)
-    REFERENCES `whoapp_test`.`user` (`id`)
+    REFERENCES `whoapp_dev`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_search_requests_interests1`
     FOREIGN KEY (`interest_id`)
-    REFERENCES `whoapp_test`.`interest` (`id`)
+    REFERENCES `whoapp_dev`.`interest` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -475,35 +476,35 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`role`
+-- Table `whoapp_dev`.`role`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`role` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`role` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC))
+  UNIQUE INDEX `name` (`name` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `whoapp_test`.`role_roles_gourp`
+-- Table `whoapp_dev`.`role_roles_group`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `whoapp_test`.`role_roles_gourp` (
+CREATE TABLE IF NOT EXISTS `whoapp_dev`.`role_roles_group` (
   `role_id` INT NOT NULL,
   `role_groups_id` INT NOT NULL,
   PRIMARY KEY (`role_id`, `role_groups_id`),
-  INDEX `fk_roles_roles_gourps_roles1_idx` (`role_id` ASC),
-  INDEX `fk_roles_roles_gourps_roles_groups1_idx` (`role_groups_id` ASC),
-  CONSTRAINT `fk_roles_roles_gourps_roles1`
+  INDEX `fk_roles_roles_groups_roles1_idx` (`role_id` ASC),
+  INDEX `fk_roles_roles_groups_roles_groups1_idx` (`role_groups_id` ASC),
+  CONSTRAINT `fk_roles_roles_groups_roles1`
     FOREIGN KEY (`role_id`)
-    REFERENCES `whoapp_test`.`role` (`id`)
+    REFERENCES `whoapp_dev`.`role` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_roles_roles_gourps_roles_groups1`
+  CONSTRAINT `fk_roles_roles_groups_roles_groups1`
     FOREIGN KEY (`role_groups_id`)
-    REFERENCES `whoapp_test`.`roles_group` (`id`)
+    REFERENCES `whoapp_dev`.`roles_group` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -513,4 +514,4 @@ COLLATE = utf8_unicode_ci;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+SET UNIQUE_CHECKS=@OLD_CHECKS;

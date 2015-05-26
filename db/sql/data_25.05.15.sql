@@ -149,13 +149,13 @@ INSERT INTO `role` VALUES (1,'admin'),(2,'user');
 UNLOCK TABLES;
 
 --
--- Dumping data for table `role_roles_gourp`
+-- Dumping data for table `role_roles_group`
 --
 
-LOCK TABLES `role_roles_gourp` WRITE;
-/*!40000 ALTER TABLE `role_roles_gourp` DISABLE KEYS */;
-INSERT INTO `role_roles_gourp` VALUES (1,1),(2,2);
-/*!40000 ALTER TABLE `role_roles_gourp` ENABLE KEYS */;
+LOCK TABLES `role_roles_group` WRITE;
+/*!40000 ALTER TABLE `role_roles_group` DISABLE KEYS */;
+INSERT INTO `role_roles_group` VALUES (1,1),(2,2);
+/*!40000 ALTER TABLE `role_roles_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -181,11 +181,11 @@ UNLOCK TABLES;
 -- Dumping data for table `user`
 --
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (3,'retro45','pass3231231','1985-12-25',0,'1985-12-25',0,2,2),(4,'firstuser','pass3231231','1995-12-15',0,'1995-12-15',0,2,2),(5,'somedail','pass3231231','1985-12-25',0,'1985-12-25',0,2,2),(6,'nikita_inok','pass3231231','1990-12-15',0,'1990-12-15',0,3,2);
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
-UNLOCK TABLES;
+# LOCK TABLES `user` WRITE;
+# /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+# INSERT INTO `user` VALUES (3,'retro45','pass3231231','1985-12-25',0,'1985-12-25',0,2,2),(4,'firstuser','pass3231231','1995-12-15',0,'1995-12-15',0,2,2),(5,'somedail','pass3231231','1985-12-25',0,'1985-12-25',0,2,2),(6,'nikita_inok','pass3231231','1990-12-15',0,'1990-12-15',0,3,2);
+# /*!40000 ALTER TABLE `user` ENABLE KEYS */;
+# UNLOCK TABLES;
 
 --
 -- Dumping data for table `user_current_interest`

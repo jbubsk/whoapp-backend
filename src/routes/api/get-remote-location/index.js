@@ -1,4 +1,4 @@
-var locationServices = require('../../services/location');
+var locationServices = require('../../../services/location');
 
 function getRemoteLocation(req, res, next) {
 

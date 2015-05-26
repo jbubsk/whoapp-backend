@@ -1,6 +1,3 @@
-var config = require('./config'),
-    ObjectID = require('mongodb').ObjectID;
-
 module.exports = {
 
     getDate: function (ddMMyyyy) {
@@ -23,18 +20,5 @@ module.exports = {
             date = ddMMyyyy;
         }
         return date;
-    },
-
-    getConnectionName: function () {
-        if (process.env.DB_CONNECTION) {
-            return config.dbConnections[process.env.DB_CONNECTION];
-        } else {
-            console.warn("`DB_CONNECTION` env variable isn't found");
-        }
-        return dbConnection;
-    },
-
-    getMongoObjectId: function (hash) {
-        return new ObjectID(hash);
     }
 };

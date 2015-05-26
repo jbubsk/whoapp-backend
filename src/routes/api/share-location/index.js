@@ -1,5 +1,4 @@
-var locationServices = require('../../services/location'),
-    common = require('../../common');
+var locationServices = require('../../../services/location');
 
 function shareLocation(req, res, next) {
 

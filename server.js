@@ -1,7 +1,4 @@
 var application = require('./application'),
-    logger = require('./src/logger-winston');
+    config  = require('./src/config');
 
-application.connectDB();
-application.startExpress();
-
-logger.info('App started');
+application.start(config);

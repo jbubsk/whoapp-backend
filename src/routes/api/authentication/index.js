@@ -1,4 +1,4 @@
-var logger = require('../../logger-winston');
+var logger = require('../../../logger-winston');
 
 module.exports = function (req, res, next) {
     if (req.session.username) {
