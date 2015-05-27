@@ -1,6 +1,9 @@
 var mysql    = require('mysql'),
     config   = require('./config'),
+    logger = require('./logger-winston'),
     database = config.database;
+
+logger.info("Connecting to DB... host: " + database.host[process.env.NODE_ENV]);
 
 var pool = mysql.createPool({
     connectionLimit : database.poolSize,
