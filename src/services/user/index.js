@@ -31,7 +31,10 @@ function login(params, callback) {
             } else if (user.salt && checkPassword(params.password, user)) {
                 callback(null, user);
             } else {
-                callback({status : 401}, null);
+                callback({
+                    status  : 401,
+                    message : "no match is found for : " + params.username + "/" + params.password
+                }, null);
             }
         });
     }
