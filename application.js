@@ -34,6 +34,10 @@ app.use('/api', apiRouter);
 
 sockets.setupListeners(server);
 
+var envLog = 'NODE_ENV:' + process.env.NODE_ENV;
+
+logger.info(envLog);
+
 module.exports = {
     start : function (config) {
         server.listen(config.port, config.ip_address);

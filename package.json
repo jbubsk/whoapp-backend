@@ -19,6 +19,6 @@
     "start_dev": "NODE_ENV=development node server.js",
     "start_dev_debug": "NODE_ENV=development node --debug=5858 server.js",
     "start_dev_debug_brk": "NODE_ENV=development node --debug-brk=5858 server.js",
-    "postinstall": "npm run start_dev"
+    "postinstall": "export NODE_ENV=development"
   }
 }

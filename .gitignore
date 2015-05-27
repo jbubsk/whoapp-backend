@@ -1,6 +1,7 @@
 .idea
 node_modules
 logs
+**/*.log
 *.iml
 .openshift
 db/*.mwb*

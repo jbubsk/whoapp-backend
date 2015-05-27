@@ -5,7 +5,7 @@ function login(req, res) {
     userService.login(req.body, function (err, user) {
         if (err) {
             logger.error(err);
-            res.status(err.status || 400).send();
+            res.status(err.code || 400).send();
         } else {
             req.session.username = user.username;
             res.json({

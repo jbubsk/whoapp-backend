@@ -30,7 +30,7 @@ function getConnection(successCallback, errorCallback) {
             }
             errorCallback({
                 "code"   : 100,
-                "status" : "Error in connection database"
+                "status" : "DB connection error"
             }, null);
         } else {
             successCallback(connection);
