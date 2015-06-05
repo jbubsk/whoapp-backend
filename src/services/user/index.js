@@ -1,12 +1,11 @@
-var crypto = require('crypto'),
-    pool   = require('../../db_pool');
+var pool = require('../../db_pool'),
+    utils = require('../../utils');
 
 function getUser(params, callback) {
     pool.getConnection(function (connection) {
-        var username = params.username,
-            query = "SELECT * FROM user " +
-                "WHERE " +
-                "username = '" + username + "'";
+        var query = " SELECT * FROM user" +
+            " WHERE" +
+            " username = '" + params.username + "'";
 
         connection.query(query, function (err, users) {
             connection.release();
@@ -15,29 +14,10 @@ function getUser(params, callback) {
             } else if (users instanceof Array && users.length > 0) {
                 callback(null, users[0]);
             } else {
-                callback(null, {msg : 'user not found'});
+                callback(null, null);
             }
         });
     }, callback)
-}
-
-function login(params, callback) {
-    if (!params.password) {
-        callback({error : {message : 'password is required'}}, null);
-    } else {
-        getUser(params, function (err, user) {
-            if (err) {
-                callback(err, null);
-            } else if (user.salt && checkPassword(params.password, user)) {
-                callback(null, user);
-            } else {
-                callback({
-                    status  : 401,
-                    message : "no match is found for : " + params.username + "/" + params.password
-                }, null);
-            }
-        });
-    }
 }
 
 function createUser(params, callback) {
@@ -63,7 +43,7 @@ function createUser(params, callback) {
 
         "(" +
         "'" + params.username + "'" +
-        ",'" + encryptPwd(params.password, salt) + "'" +
+        ",'" + utils.encryptPwd(params.password, salt) + "'" +
         ",'" + salt + "'" +
         ",NOW()" +
         "," + 0 +
@@ -110,7 +90,6 @@ function createUser(params, callback) {
                                         throw err;
                                     });
                                 }
-                                console.log('Transaction Complete.');
                                 connection.release();
                                 callback(null, "user is created");
                             });
@@ -122,16 +101,47 @@ function createUser(params, callback) {
     }, callback)
 }
 
-function checkPassword(password, user) {
-    return encryptPwd(password, user.salt) === user.password;
+
+function setNetworkStatus(params, callback) {
+    pool.getConnection(function (connection) {
+        var query = " UPDATE user" +
+            " SET network_status=" + params.network_status +
+            " WHERE" +
+            " username='" + params.username + "'";
+
+        connection.query(query, function (err, result) {
+            if (err) {
+                callback(err, null);
+            } else {
+                callback(null, "network status is updated");
+            }
+        });
+    }, callback)
 }
 
-function encryptPwd(password, salt) {
-    return crypto.createHmac('sha1', salt).update(password).digest('hex');
+
+function getUserById(id, done) {
+    pool.getConnection(function (connection) {
+        var query = " SELECT * FROM user" +
+            " WHERE" +
+            " id= " + id;
+
+        connection.query(query, function (err, users) {
+            connection.release();
+            if (err) {
+                done(err, null);
+            } else if (users instanceof Array && users.length > 0) {
+                done(null, users[0]);
+            } else {
+                done(null, "user not found");
+            }
+        });
+    }, done)
 }
 
 module.exports = {
-    login      : login,
-    createUser : createUser,
-    getUser    : getUser
+    createUser: createUser,
+    getUser: getUser,
+    getUserById: getUserById,
+    setNetworkStatus: setNetworkStatus
 };

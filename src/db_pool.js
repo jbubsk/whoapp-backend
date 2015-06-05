@@ -4,12 +4,12 @@ var mysql    = require('mysql'),
     database = config.database;
 
 var pool = mysql.createPool({
-    connectionLimit : database.poolSize,
-    host            : database.host,
-    database        : database.schema,
-    user            : database.user,
-    password        : database.password,
-    debug           : config.debug
+    connectionLimit: database.poolSize,
+    host           : database.host,
+    database       : database.schema,
+    user           : database.user,
+    password       : database.password,
+    debug          : config.debug
 });
 
 var connectionLog = "Connected to DB:\n\t" +
@@ -28,10 +28,9 @@ function getConnection(successCallback, errorCallback) {
             if (connection) {
                 connection.release();
             }
-            errorCallback({
-                "code"   : 100,
-                "status" : "DB connection error"
-            }, null);
+            var errorMessage = "DB connection error";
+            logger.error(errorMessage);
+            errorCallback(errorMessage, null);
         } else {
             successCallback(connection);
         }
@@ -41,5 +40,5 @@ function getConnection(successCallback, errorCallback) {
 }
 
 module.exports = {
-    getConnection : getConnection
+    getConnection: getConnection
 };

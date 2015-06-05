@@ -1,3 +1,5 @@
+var crypto = require('crypto');
+
 module.exports = {
 
     getDate: function (ddMMyyyy) {
@@ -20,5 +22,9 @@ module.exports = {
             date = ddMMyyyy;
         }
         return date;
+    },
+
+    encryptPwd: function (password, salt) {
+        return crypto.createHmac('sha1', salt).update(password).digest('hex');
     }
 };

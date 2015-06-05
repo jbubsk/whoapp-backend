@@ -1,15 +1,19 @@
-var locationService = require('../../../services/location');
+var authenticationService = require('../../../services/authentication');
 
 module.exports = function (req, res, next) {
 
-    locationService.shareLocation({username : req.session.username}, function (err, result) {
-        if (err) {
-            res.json({error : 'Some error occurred'});
-        } else {
-            delete req.session.username;
-            res.json({
-                result : "loggedout"
-            });
-        }
-    });
+    if (req.user) {
+        authenticationService.logout(req.user.username, function (err, result) {
+            if (err) {
+                res.json({status: null, message: 'Some error occurred during logout'});
+            } else {
+                req.logout();
+                res.json({
+                    result: "user is logged out"
+                });
+            }
+        });
+    } else {
+        res.status(401).json({result: 'user isn\'t authenticated'});
+    }
 };
