@@ -55,7 +55,7 @@ function createUser(params, callback) {
 
         connection.beginTransaction(function (err) {
             if (err) {
-                throw err
+                callback(err, null);
             }
             connection.query(userQuery, function (err, user) {
                 if (err) {

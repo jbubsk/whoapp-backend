@@ -5,9 +5,34 @@ function getAllInterests(req, res, next) {
         if (err) {
             res.status(400).send();
         } else {
-            res.json({items: interests});
+            res.json({result: interests});
         }
     });
 }
 
-module.exports = getAllInterests;
+function deleteItem(req, res, next) {
+    interestService.deleteItem(req.params.id, function (err, result) {
+        if (err) {
+            res.status(400).json(err);
+        } else {
+            res.json({result: "interest is deleted"});
+        }
+    });
+}
+
+function addItem(req, res, next) {
+    interestService.addItem(req.body.name, function (err, result) {
+        if (err) {
+            res.status(400).json(err);
+        } else {
+            res.json({result: result});
+        }
+    });
+}
+
+
+module.exports = {
+    getAllInterests: getAllInterests,
+    deleteItem: deleteItem,
+    addItem: addItem
+};

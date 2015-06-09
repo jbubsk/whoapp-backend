@@ -45,7 +45,7 @@ function addPlace(params, callback) {
                         if (err) {
                             callback(err, null);
                         } else {
-                            callback(null, result);
+                            callback(null, place.insertId);
                             connection.commit();
                             logger.debug('place "' + params.name + '" is added');
                         }
@@ -57,7 +57,7 @@ function addPlace(params, callback) {
 }
 
 function getAllPlaces(callback) {
-    var query = "SELECT p.name, pd.description, c.name_ru, pd.address" +
+    var query = "SELECT p.id, p.name, pd.description, c.name_ru, pd.address" +
         " FROM" +
         " place as p" +
         " JOIN" +
@@ -80,7 +80,54 @@ function getAllPlaces(callback) {
     }, callback)
 }
 
+function deletePlace(placeId, callback) {
+    var queryPlace = "DELETE FROM place" +
+            " WHERE id=" +
+            placeId,
+        queryPlaceDetails = "DELETE FROM place_details" +
+            " WHERE place_id=" +
+            placeId;
+
+    pool.getConnection(function (connection) {
+        connection.beginTransaction(function (beginTrxErr) {
+            if (beginTrxErr) {
+                callback(beginTrxErr, null);
+            } else {
+
+                connection.query(queryPlaceDetails, function (placeDetailsErr, result) {
+                    if (placeDetailsErr) {
+                        connection.rollback(function () {
+                            callback(placeDetailsErr, null);
+                        });
+                    } else {
+
+                        connection.query(queryPlace, function (placeErr, result) {
+                            if (placeErr) {
+                                connection.rollback(function () {
+                                    callback(placeErr, null);
+                                });
+                            } else {
+
+                                connection.commit(function (err) {
+                                    if (err) {
+                                        connection.rollback(function () {
+                                            throw err;
+                                        });
+                                    }
+                                    connection.release();
+                                    callback(null, "place is deleted");
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }, callback)
+}
+
 module.exports = {
     addPlace: addPlace,
-    getAllPlaces: getAllPlaces
+    getAllPlaces: getAllPlaces,
+    deletePlace: deletePlace
 };

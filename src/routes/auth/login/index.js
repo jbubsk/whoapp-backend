@@ -5,7 +5,7 @@ function login(req, res, next) {
 	passport.authenticate('local', function (err, user) {
 		if (err) {
 			logger.error(err);
-			return next(err);
+			return res.status(err).send();
 		}
 		if (!user) {
 			return res.status(400).send();

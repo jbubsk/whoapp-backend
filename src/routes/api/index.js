@@ -2,10 +2,10 @@ var express = require('express'),
     router = express.Router(),
     authorization = require('./authentication/index'),
     getRemoteLocation = require('./get-remote-location/index'),
-    getAllInterests = require('./interest/index'),
+    shareLocation = require('./share-location/index'),
+    interests = require('./interest/index'),
     cities = require('./cities/index'),
-    places = require('./places/index'),
-    shareLocation = require('./share-location/index');
+    places = require('./places/index');
 
 if (process.env.NODE_ENV !== 'test') {
     router.use(authorization);
@@ -13,9 +13,15 @@ if (process.env.NODE_ENV !== 'test') {
 
 router.get('/locations', getRemoteLocation);
 router.post('/locations', shareLocation);
-router.get('/interests', getAllInterests);
-router.get('/cities/:name', cities.getCitiesByName);
+
+router.get('/interests', interests.getAllInterests);
+router.post('/interests', interests.addItem);
+router.delete('/interests/:id', interests.deleteItem);
+
 router.get('/places', places.getPlaces);
 router.post('/places', places.addPlace);
+router.delete('/places/:id', places.deletePlace);
+
+router.get('/cities/:name', cities.getCitiesByName);
 
 module.exports = router;

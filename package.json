@@ -21,7 +21,7 @@
     "dev": "NODE_ENV=development node server.js",
     "dev_debug": "NODE_ENV=development node --debug=5858 server.js",
     "dev_debug_brk": "NODE_ENV=development node --debug-brk=5858 server.js",
-    "test": "NODE_ENV=test mocha test/mysql.js",
+    "test": "NODE_ENV=test mocha test/db_suites",
     "add-user": "NODE_ENV=development mocha test/add-users.js"
   },
   "devDependencies": {
