@@ -5,11 +5,15 @@ var express = require('express'),
     shareLocation = require('./share-location/index'),
     interests = require('./interest/index'),
     cities = require('./cities/index'),
-    places = require('./places/index');
+    places = require('./places/index'),
+    users = require('./users/index');
 
 if (process.env.NODE_ENV !== 'test') {
     router.use(authorization);
 }
+
+router.post('/users', users.createUser);
+router.get('/users', users.getAllUsers);
 
 router.get('/locations', getRemoteLocation);
 router.post('/locations', shareLocation);

@@ -1,13 +1,14 @@
 module.exports = function (gulp) {
     var nodemon = require('gulp-nodemon');
 
-    gulp.task('run-server-test', function () {
-        nodemon({
+    gulp.task('run-server-dev-debug', function () {
+        return nodemon({
             script: 'server.js',
             env: {
-                'NODE_ENV': 'test'
+                'NODE_ENV': 'development',
+                'PORT': 8085
             },
-            nodeArgs: ['--debug'],
+            nodeArgs: ['--debug=5858'],
             watch: ['none']
         });
     });
@@ -15,11 +16,9 @@ module.exports = function (gulp) {
         return nodemon({
             script: 'server.js',
             env: {
-                'NODE_ENV': 'dev',
-                'DB_CONNECTION': 'dev_remote',
-                'PORT': 8200
+                'NODE_ENV': 'development',
+                'PORT': 8085
             },
-            nodeArgs: ['--debug'],
             watch: ['none']
         });
     });

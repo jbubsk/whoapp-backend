@@ -1,3 +1,5 @@
+"use strict";
+
 var pool = require('../../db_pool'),
     utils = require('../../utils');
 
@@ -15,6 +17,29 @@ function getUser(params, callback) {
                 callback(null, users[0]);
             } else {
                 callback(null, null);
+            }
+        });
+    }, callback)
+}
+
+
+function getAllUsers(callback) {
+    pool.getConnection(function (connection) {
+        var query = " SELECT" +
+            " u.id, u.username, u.last_date_activity AS lastDateActivity, us.name AS status" +
+            " FROM user" +
+            " AS u" +
+            " JOIN" +
+            " user_status as us" +
+            " ON" +
+            " us.id=u.user_status_id";
+
+        connection.query(query, function (err, users) {
+            connection.release();
+            if (err) {
+                callback(err, null);
+            } else {
+                callback(null, users);
             }
         });
     }, callback)
@@ -49,7 +74,7 @@ function createUser(params, callback) {
         "," + 0 +
         ",NOW()" +
         "," + 0 +
-        "," + 2 +
+        "," + 2 + //1-deleted, 2-active, 3-inactive
         "," + 2 +
         ")";
 
@@ -77,7 +102,7 @@ function createUser(params, callback) {
                     "," + user.insertId +
                     ")";
 
-                    connection.query(userDetailsQuery, function (err, user) {
+                    connection.query(userDetailsQuery, function (err, userDetails) {
                         if (err) {
                             connection.rollback(function () {
                                 throw err;
@@ -91,7 +116,10 @@ function createUser(params, callback) {
                                     });
                                 }
                                 connection.release();
-                                callback(null, "user is created");
+                                callback(null, {
+                                    id: user.insertId,
+                                    status: 'active',
+                                    last_date_activity: new Date()});
                             });
                         }
                     });
@@ -105,11 +133,12 @@ function createUser(params, callback) {
 function setNetworkStatus(params, callback) {
     pool.getConnection(function (connection) {
         var query = " UPDATE user" +
-            " SET network_status=" + params.network_status +
+            " SET network_status=" + params.networkStatus +
             " WHERE" +
             " username='" + params.username + "'";
 
         connection.query(query, function (err, result) {
+            connection.release();
             if (err) {
                 callback(err, null);
             } else {
@@ -139,9 +168,29 @@ function getUserById(id, done) {
     }, done)
 }
 
+function deleteUser(){
+    pool.getConnection(function (connection) {
+        var query = " DELETE FROM user" +
+            " WHERE" +
+            " id= " + id;
+
+        connection.query(query, function (err, users) {
+            connection.release();
+            if (err) {
+                done(err, null);
+            } else if (users instanceof Array && users.length > 0) {
+                done(null, users[0]);
+            } else {
+                done(null, "user not found");
+            }
+        });
+    }, done)
+}
+
 module.exports = {
     createUser: createUser,
     getUser: getUser,
+    getAllUsers: getAllUsers,
     getUserById: getUserById,
     setNetworkStatus: setNetworkStatus
 };

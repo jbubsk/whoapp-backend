@@ -28,7 +28,7 @@ describe("DB -> Places suites -> ", function () {
         placeService.addPlace({
             name: 'Лучшее место',
             city: 'Москва',
-            city_id: 13658,
+            cityId: 13658,
             address: 'Москва, проспект Улиц, 5'
         }, function (err) {
             expect(err).to.equal(null, "error should equal NULL");
@@ -41,7 +41,7 @@ describe("DB -> Places suites -> ", function () {
         placeService.addPlace({
             name: 'Не Лучшее место',
             city: 'Москва',
-            city_id: 13658,
+            cityId: 13658,
             address: 'Москва, проспект Таганский, 5'
         }, function (err) {
             expect(err).to.equal(null, "error should equal NULL");

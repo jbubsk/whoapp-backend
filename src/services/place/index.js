@@ -37,7 +37,7 @@ function addPlace(params, callback) {
                     "'" + (params.description || '') + "'" +
                     ",'" + params.address + "'" +
                     "," + place.insertId +
-                    "," + params.city_id +
+                    "," + params.cityId +
                     ")";
 
                     logger.log(placeDetailsQuery);

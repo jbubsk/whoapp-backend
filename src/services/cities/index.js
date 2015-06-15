@@ -23,7 +23,7 @@ function getCityIdByName(params, callback) {
 
 function getCitiesByName(searchText, callback) {
     pool.getConnection(function (connection) {
-        var query = "SELECT name_ru, district_ru, id FROM city" +
+        var query = "SELECT name_ru AS nameRu, district_ru AS districtRu, id FROM city" +
             " WHERE" +
             " name_ru LIKE '" + searchText + "%'";
 

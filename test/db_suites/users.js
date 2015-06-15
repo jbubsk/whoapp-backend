@@ -78,7 +78,7 @@ describe("DB -> Users suites -> ", function () {
             newNetworkStatus = user.network_status === 0 ? 1 : 0;
 
             userService.setNetworkStatus({
-                network_status: newNetworkStatus,
+                networkStatus: newNetworkStatus,
                 username: user.username
             }, function (err, result) {
                 expect(err).to.equal(null, "error should equal NULL");
