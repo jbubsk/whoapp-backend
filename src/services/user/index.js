@@ -12,11 +12,11 @@ function getUser(params, callback) {
         connection.query(query, function (err, users) {
             connection.release();
             if (err) {
-                callback(err, null);
+                callback(err, false);
             } else if (users instanceof Array && users.length > 0) {
                 callback(null, users[0]);
             } else {
-                callback(null, null);
+                callback(null, false);
             }
         });
     }, callback)

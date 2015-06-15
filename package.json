@@ -23,6 +23,7 @@
     "dev_debug": "gulp dev_debug",
     "dev_debug_brk": "NODE_ENV=development node --debug-brk=5858 server.js",
     "test": "NODE_ENV=test mocha test/db_suites",
+    "git-push-openshift": "git pull --rebase openshift master && git push openshift master",
     "add-user": "NODE_ENV=development mocha test/add-users.js"
   },
   "devDependencies": {

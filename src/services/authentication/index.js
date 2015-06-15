@@ -8,7 +8,7 @@ function validPassword(password, user) {
 function login(username, password, done) {
     userService.getUser({username: username, password: password}, function (err, user) {
         if (err) {
-            return done(100, false);
+            return done(500, false);
         }
         if (!user) {
             return done(400, false);
