@@ -3,7 +3,7 @@ var express = require('express'),
     authorization = require('./authentication/index'),
     getRemoteLocation = require('./get-remote-location/index'),
     shareLocation = require('./share-location/index'),
-    interests = require('./interest/index'),
+    interests = require('./interests/index'),
     cities = require('./cities/index'),
     places = require('./places/index'),
     users = require('./users/index');
@@ -12,8 +12,9 @@ if (process.env.NODE_ENV !== 'test') {
     router.use(authorization);
 }
 
-router.post('/users', users.createUser);
 router.get('/users', users.getAllUsers);
+router.post('/users', users.createUser);
+router.delete('/users/:id', users.deleteUser);
 
 router.get('/locations', getRemoteLocation);
 router.post('/locations', shareLocation);

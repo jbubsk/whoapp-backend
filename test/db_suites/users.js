@@ -7,6 +7,7 @@ describe("DB -> Users suites -> ", function () {
     var pool = require('../../src/db_pool'),
         userService = require('../../src/services/user'),
         user,
+        userId,
         password = "qweqweqwe5",
         i = 0;
 
@@ -53,8 +54,9 @@ describe("DB -> Users suites -> ", function () {
             email: 'email@mail' + i + '.ru'
         };
 
-        userService.createUser(user, function (err) {
+        userService.createUser(user, function (err, result) {
             expect(err).to.equal(null, "error should equal null");
+            userId = result.id;
             done();
         });
     });
@@ -93,6 +95,14 @@ describe("DB -> Users suites -> ", function () {
                     done();
                 });
             });
+        });
+    });
+
+    it('delete user', function (done) {
+        userService.deleteUser(userId, function (err, result) {
+            expect(err).to.equal(null, "error should equal NULL");
+            console.log(result);
+            done();
         });
     });
 

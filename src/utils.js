@@ -1,4 +1,5 @@
-var crypto = require('crypto');
+var crypto = require('crypto'),
+    moment = require('moment');
 
 module.exports = {
 
@@ -23,6 +24,10 @@ module.exports = {
         }
         return date;
     },
+    getFormattedDate: function (date) {
+        return moment(moment(date)).format('YYYY-MM-DD HH:mm');
+    },
+
 
     encryptPwd: function (password, salt) {
         return crypto.createHmac('sha1', salt).update(password).digest('hex');

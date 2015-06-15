@@ -1,4 +1,4 @@
-var userService = require('../user'),
+var userService = require('../users'),
     utils = require('../../utils');
 
 function validPassword(password, user) {

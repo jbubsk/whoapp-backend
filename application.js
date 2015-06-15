@@ -16,7 +16,7 @@ var express = require('express'),
     apiRouter = require('./src/routes/api'),
     authRouter = require('./src/routes/auth'),
     authenticationService = require('./src/services/authentication'),
-    userService = require('./src/services/user');
+    userService = require('./src/services/users');
 
 passport.use(new LocalStrategy(authenticationService.login));
 

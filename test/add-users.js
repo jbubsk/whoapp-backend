@@ -6,14 +6,15 @@ var assert = require('assert'),
 describe("\nUser suites ->", function () {
 	var userService = require('../src/services/user'),
 		password = 'eqewffff',
+		user,
 		i = 0;
 
 	it("add user", function (done) {
 
 		user = {
-			username: 'user' + i,
-			password: password,
-			email: 'email@mail' + i + '.ru'
+			username: 'valera',
+			password: 'valera',
+			email: 'valera@mail.ru'
 		};
 
 		userService.createUser(user, function (err) {
@@ -23,7 +24,7 @@ describe("\nUser suites ->", function () {
 		});
 	});
 
-	it("add user", function (done) {
+	/*it("add user", function (done) {
 
 		user = {
 			username: 'user' + i,
@@ -186,6 +187,6 @@ describe("\nUser suites ->", function () {
 			i++;
 			done();
 		});
-	});
+	});*/
 
 });

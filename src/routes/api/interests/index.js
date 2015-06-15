@@ -1,4 +1,4 @@
-var interestService = require('../../../services/interest');
+var interestService = require('../../../services/interests');
 
 function getAllInterests(req, res, next) {
     interestService.getAllInterests(function (err, interests) {

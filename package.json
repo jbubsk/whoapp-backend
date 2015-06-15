@@ -10,6 +10,7 @@
     "express-session": "~1.7.6",
     "extend": "~2.0.0",
     "mkdirp": "*",
+    "moment": "^2.10.3",
     "morgan": "~1.5.0",
     "mysql": "^2.6.2",
     "passport": "^0.2.2",

@@ -1,5 +1,5 @@
 var logger = require('../../../logger-winston'),
-    placesService = require('../../../services/place/index');
+    placesService = require('../../../services/places/index');
 
 function getPlaces(req, res, next) {
     placesService.getAllPlaces(function (err, places) {

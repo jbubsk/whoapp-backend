@@ -1,8 +1,8 @@
 "use strict";
 
-var userService = require('../../../services/user');
+var userService = require('../../../services/users');
 
-function createUser(req, res, next) {
+function createUser(req, res) {
     userService.createUser(req.body, function (err, result) {
         if (err) {
             res.status(400).json({error: err});
@@ -12,8 +12,18 @@ function createUser(req, res, next) {
     })
 }
 
-function getAllUsers(req, res, next) {
+function getAllUsers(req, res) {
     userService.getAllUsers(function (err, result) {
+        if (err) {
+            res.status(400).json({error: err});
+        } else {
+            res.json({result: result});
+        }
+    })
+}
+
+function deleteUser(req, res) {
+    userService.deleteUser(req.params.id, function (err, result) {
         if (err) {
             res.status(400).json({error: err});
         } else {
@@ -23,5 +33,6 @@ function getAllUsers(req, res, next) {
 }
 module.exports = {
     createUser: createUser,
-    getAllUsers: getAllUsers
+    getAllUsers: getAllUsers,
+    deleteUser: deleteUser
 };

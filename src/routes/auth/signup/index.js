@@ -1,4 +1,4 @@
-var userService = require('../../../services/user'),
+var userService = require('../../../services/users'),
     logger      = require('../../../logger-winston');
 
 function signup(req, res) {

@@ -22,7 +22,6 @@ function getUser(params, callback) {
     }, callback)
 }
 
-
 function getAllUsers(callback) {
     pool.getConnection(function (connection) {
         var query = " SELECT" +
@@ -119,7 +118,8 @@ function createUser(params, callback) {
                                 callback(null, {
                                     id: user.insertId,
                                     status: 'active',
-                                    last_date_activity: new Date()});
+                                    lastDateActivity: utils.getFormattedDate(new Date())
+                                });
                             });
                         }
                     });
@@ -128,7 +128,6 @@ function createUser(params, callback) {
         });
     }, callback)
 }
-
 
 function setNetworkStatus(params, callback) {
     pool.getConnection(function (connection) {
@@ -147,7 +146,6 @@ function setNetworkStatus(params, callback) {
         });
     }, callback)
 }
-
 
 function getUserById(id, done) {
     pool.getConnection(function (connection) {
@@ -168,20 +166,19 @@ function getUserById(id, done) {
     }, done)
 }
 
-function deleteUser(){
+function deleteUser(id, done) {
     pool.getConnection(function (connection) {
-        var query = " DELETE FROM user" +
+        var query = " UPDATE user" +
+            " SET user_status_id=1" +
             " WHERE" +
-            " id= " + id;
+            " id=" + id;
 
-        connection.query(query, function (err, users) {
+        connection.query(query, function (err, result) {
             connection.release();
             if (err) {
                 done(err, null);
-            } else if (users instanceof Array && users.length > 0) {
-                done(null, users[0]);
             } else {
-                done(null, "user not found");
+                done(null, {result: result, message: "user marked as deleted"});
             }
         });
     }, done)
@@ -192,5 +189,6 @@ module.exports = {
     getUser: getUser,
     getAllUsers: getAllUsers,
     getUserById: getUserById,
-    setNetworkStatus: setNetworkStatus
+    setNetworkStatus: setNetworkStatus,
+    deleteUser: deleteUser
 };
