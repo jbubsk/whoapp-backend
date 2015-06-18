@@ -7,6 +7,7 @@ function addPlace(params, callback) {
     pool.getConnection(function (connection) {
         var placeQuery,
             placeDetailsQuery,
+            placeLocationQuery,
             placeStatusId = 3;  // inactive
 
         placeQuery = "INSERT INTO place" +
@@ -25,6 +26,7 @@ function addPlace(params, callback) {
                 if (err) {
                     callback(err, null);
                 } else {
+
                     placeDetailsQuery = "INSERT INTO place_details" +
                     " (" +
                     "description" +
@@ -45,9 +47,29 @@ function addPlace(params, callback) {
                         if (err) {
                             callback(err, null);
                         } else {
-                            callback(null, place.insertId);
-                            connection.commit();
-                            logger.debug('place "' + params.name + '" is added');
+
+                            placeLocationQuery = " INSERT INTO location" +
+                            " (" +
+                            "latitude" +
+                            ",longitude" +
+                            ",place_id" +
+                            ")" +
+                            " VALUES" +
+                            " (" +
+                            params.latitude.toFixed(7) +
+                            "," + params.longitude.toFixed(7) +
+                            "," + place.insertId +
+                            ")";
+
+                            connection.query(placeLocationQuery, function (err, result) {
+                                if (err) {
+                                    callback(err, null);
+                                } else {
+                                    callback(null, place.insertId);
+                                    connection.commit();
+                                    logger.debug('place "' + params.name + '" is added');
+                                }
+                            });
                         }
                     });
                 }
@@ -57,16 +79,22 @@ function addPlace(params, callback) {
 }
 
 function getAllPlaces(callback) {
-    var query = "SELECT p.id, p.name, pd.description, c.name_ru, pd.address" +
+    var query = "SELECT" +
+        " p.id, p.name, pd.description, c.name_ru, pd.address, l.latitude, l.longitude" +
         " FROM" +
         " place as p" +
         " JOIN" +
         " place_details as pd" +
         " JOIN" +
         " city as c" +
-        " ON p.id = pd.place_id" +
+        " JOIN" +
+        " location as l" +
+        " ON" +
+        " p.id = pd.place_id" +
         " AND" +
-        " c.id = pd.city_id";
+        " c.id = pd.city_id" +
+        " AND" +
+        " l.place_id = p.id";
 
     pool.getConnection(function (connection) {
         connection.query(query, function (err, places) {

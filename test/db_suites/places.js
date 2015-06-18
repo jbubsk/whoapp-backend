@@ -5,7 +5,7 @@ var chai = require('chai'),
 
 describe("DB -> Places suites -> ", function () {
     var pool = require('../../src/db_pool'),
-        placeService = require('../../src/services/place'),
+        placeService = require('../../src/services/places'),
         placeId;
 
     it("delete all places", function (done) {
@@ -29,7 +29,9 @@ describe("DB -> Places suites -> ", function () {
             name: 'Лучшее место',
             city: 'Москва',
             cityId: 13658,
-            address: 'Москва, проспект Улиц, 5'
+            address: 'Москва, проспект Улиц, 5',
+            latitude: 55.8342421,
+            longitude: 37.2396415
         }, function (err) {
             expect(err).to.equal(null, "error should equal NULL");
             done();
@@ -42,7 +44,9 @@ describe("DB -> Places suites -> ", function () {
             name: 'Не Лучшее место',
             city: 'Москва',
             cityId: 13658,
-            address: 'Москва, проспект Таганский, 5'
+            address: 'Москва, проспект Таганский, 5',
+            latitude: 54.8342054021,
+            longitude: 33.239006415
         }, function (err) {
             expect(err).to.equal(null, "error should equal NULL");
             done();
@@ -69,7 +73,7 @@ describe("DB -> Places suites -> ", function () {
         });
     });
 
-    it("get all places after deleting", function (done) {
+    it("get all places after deleting of one", function (done) {
         placeService.getAllPlaces(function (err, places) {
             expect(err).to.equal(null, "error should equal NULL");
             places.should.be.a('array');

@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`country` (
 CREATE TABLE IF NOT EXISTS `whoapp_test`.`city` (
   `id`          INT         NOT NULL,
   `name_ru`     VARCHAR(45) NOT NULL,
-  `distinct_ru` VARCHAR(75) NULL,
+  `district_ru` VARCHAR(75) NULL,
   `country_id`  INT         NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_city_country1_idx` (`country_id` ASC),
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`location` (
   CONSTRAINT `fk_location_place`
   FOREIGN KEY (`place_id`)
   REFERENCES `whoapp_test`.`place` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_location_user`
   FOREIGN KEY (`user_id`)
@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS `whoapp_test`.`place_details` (
   CONSTRAINT `fk_place_details_place1`
   FOREIGN KEY (`place_id`)
   REFERENCES `whoapp_test`.`place` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_place_details_city1`
   FOREIGN KEY (`city_id`)
