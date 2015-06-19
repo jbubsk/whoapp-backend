@@ -1,4 +1,4 @@
-var pool = require('../../db_pool');
+var pool = require('../../db-pool');
 
 function addItem(name, callback) {
     pool.getConnection(function (connection) {

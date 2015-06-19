@@ -6,3 +6,4 @@ logs
 .openshift
 db/*.mwb*
 db/*.pdf
+app.config.json

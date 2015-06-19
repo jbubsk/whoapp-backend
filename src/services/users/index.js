@@ -1,6 +1,6 @@
 "use strict";
 
-var pool = require('../../db_pool'),
+var pool = require('../../db-pool'),
     utils = require('../../utils');
 
 function getUser(params, callback) {

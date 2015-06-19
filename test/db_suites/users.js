@@ -4,7 +4,7 @@ var chai = require('chai'),
     should = chai.should();
 
 describe("DB -> Users suites -> ", function () {
-    var pool = require('../../src/db_pool'),
+    var pool = require('../../src/db-pool'),
         userService = require('../../src/services/user'),
         user,
         userId,

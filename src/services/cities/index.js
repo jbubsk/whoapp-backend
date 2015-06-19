@@ -1,6 +1,6 @@
 "use strict";
 
-var pool = require('../../db_pool'),
+var pool = require('../../db-pool'),
     logger = require('../../logger-winston');
 
 function getCityIdByName(params, callback) {
