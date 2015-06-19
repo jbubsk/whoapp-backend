@@ -19,14 +19,13 @@
     "winston": "~0.8.3"
   },
   "scripts": {
-    "dev": "NODE_ENV=development gulp",
+    "dev": "NODE_ENV=development gulp dev",
     "database": "clear && rhc app restart whoappbackend && rhc port-forward whoappbackend",
     "dev-debug": "NODE_ENV=development gulp dev_debug",
     "dev-debug-brk": "NODE_ENV=development node --debug-brk=5858 server.js",
     "test": "NODE_ENV=test mocha test/db_suites",
     "test-places": "NODE_ENV=test mocha test/db_suites/places.js",
-    "git-push-openshift": "git pull --rebase openshift master && git push openshift master",
-    "postinstall": "gulp"
+    "git-push-openshift": "git pull --rebase openshift master && git push openshift master"
   },
   "devDependencies": {
     "chai": "^2.3.0",
