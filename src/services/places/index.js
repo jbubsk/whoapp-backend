@@ -80,7 +80,7 @@ function addPlace(params, callback) {
 
 function getAllPlaces(callback) {
     var query = "SELECT" +
-        " p.id, p.name, pd.description, c.name_ru as city§, pd.address, l.latitude, l.longitude" +
+        " p.id, p.name, pd.description, c.name_ru as city, pd.address, l.latitude, l.longitude" +
         " FROM" +
         " place as p" +
         " JOIN" +
