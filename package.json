@@ -9,7 +9,7 @@
     "express": "~4.0.0",
     "express-session": "~1.7.6",
     "extend": "~2.0.0",
-    "mkdirp": "*",
+    "mkdirp": "^0.5.1",
     "moment": "^2.10.3",
     "morgan": "~1.5.0",
     "mysql": "^2.6.2",
@@ -26,7 +26,7 @@
     "test": "NODE_ENV=test mocha test/db_suites",
     "test-places": "NODE_ENV=test mocha test/db_suites/places.js",
     "git-push-openshift": "git pull --rebase openshift master && git push openshift master",
-    "postinstall" : "gulp build-config"
+    "postinstall": "gulp build-config"
   },
   "devDependencies": {
     "chai": "^2.3.0",

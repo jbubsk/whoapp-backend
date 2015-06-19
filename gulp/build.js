@@ -3,7 +3,7 @@ var fs = require('fs');
 module.exports = function (gulp) {
 
     gulp.task('build-config', 'setup config variables', function () {
-        var fileName = './app.config.json',
+        var fileName = 'app.config.json',
             db_name = {
                 development: 'whoapp_dev',
                 test: 'whoapp_test'
