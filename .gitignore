@@ -4,6 +4,5 @@ logs
 **/*.log
 *.iml
 .openshift
-db/*.mwb*
-db/*.pdf
+db
 app.config.json
