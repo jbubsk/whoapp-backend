@@ -5,7 +5,10 @@ var pool = require('../../db-pool'),
 
 function getUser(params, callback) {
     pool.getConnection(function (connection) {
-        var query = " SELECT * FROM user" +
+        var query = " SELECT u.username" +
+            " FROM user as u" +
+            //" JOIN" +
+            //" location as l" +
             " WHERE" +
             " username = '" + params.username + "'";
 
@@ -20,6 +23,10 @@ function getUser(params, callback) {
             }
         });
     }, callback)
+}
+
+function addInterests(params, callback){
+
 }
 
 function getAllUsers(callback) {

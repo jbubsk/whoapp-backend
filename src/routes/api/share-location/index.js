@@ -4,7 +4,7 @@ function shareLocation(req, res, next) {
 
     req.body.username = req.session.username;
     
-    locationServices.shareLocation(req.body, function (err, result) {
+    locationServices.setLocation(req.body, function (err, result) {
         if (err) {
             next(err);
         }

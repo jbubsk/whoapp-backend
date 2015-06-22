@@ -1,4 +1,8 @@
-function getRemoteLocation(callback) {
+"use strict";
+
+var poolConnection = require('../../db-pool');
+
+function getLocation(callback) {
     //User.find({online: true}, 'username latitude longitude', function (err, location) {
     //    if (err) {
     //        callback(err, null);
@@ -8,29 +12,23 @@ function getRemoteLocation(callback) {
     //});
 }
 
-function shareLocation(params, callback) {
-    //var updateObject = {};
-    //
-    //if (params.latitude && params.longitude) {
-    //    updateObject.latitude = params.latitude;
-    //    updateObject.longitude = params.longitude;
-    //    updateObject.online = true;
-    //} else {
-    //    updateObject.online = false;
-    //}
-    //
-    //User.update({username: params.username}, {$set: updateObject}, function (err, user) {
-    //    if (err) {
-    //        callback(err, null);
-    //    } else if (!user) {
-    //        callback("User's not found", null);
-    //    } else {
-    //        callback(null, 'ok');
-    //    }
-    //});
+function setLocation(params, callback) {
+    var query = '';
+
+    poolConnection.getConnection(function (connection) {
+        connection.query(query, function (err, result) {
+            connection.release();
+            if (err) {
+                callback(err, null);
+            } else {
+                callback(null, {});
+            }
+
+        });
+    }, callback)
 }
 
 module.exports = {
-    getRemoteLocation: getRemoteLocation,
-    shareLocation: shareLocation
+    getLocation: getLocation,
+    setLocation: setLocation
 };
