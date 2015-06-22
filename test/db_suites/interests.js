@@ -5,13 +5,13 @@ var chai = require('chai'),
 
 describe("DB -> Interests suites -> ", function () {
     var pool = require('../../src/db-pool'),
-        interestService = require('../../src/services/interest'),
+        interestService = require('../../src/services/interests'),
         name = 'Drink',
         insertId;
 
     it("delete all interests", function (done) {
 
-        pool.getConnection(function (connection) {
+        pool.getConnection(function (err, connection) {
             connection.query("DELETE FROM interest WHERE id > 0", function (err) {
                 expect(err).to.equal(null, "error should equal NULL");
                 done();

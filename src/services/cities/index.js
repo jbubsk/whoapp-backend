@@ -1,41 +1,57 @@
 "use strict";
 
 var pool = require('../../db-pool'),
-    logger = require('../../logger-winston');
+    async = require('async'),
+    utils = require('../../utils');
 
-function getCityIdByName(params, callback) {
-    pool.getConnection(function (connection) {
+function getCityIdByName(params, done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            getCityId
+        ],
+        utils.handleDbQuery(done));
+
+    function getCityId(conn, callback) {
         var query = "SELECT id FROM city" +
             " WHERE" +
             " name_ru='" + params.name + "'";
 
-        connection.query(query, function (err, cityId) {
-            connection.release();
+        conn.query(query, function (err, cityId) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
-                logger.debug(cityId);
                 callback(null, cityId);
             }
         });
-    }, callback);
+    }
 }
 
-function getCitiesByName(searchText, callback) {
-    pool.getConnection(function (connection) {
+function getCitiesByName(searchText, done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            getCities
+        ],
+        utils.handleDbQuery(done));
+
+    function getCities(conn, callback) {
         var query = "SELECT name_ru AS nameRu, district_ru AS districtRu, id FROM city" +
             " WHERE" +
             " name_ru LIKE '" + searchText + "%'";
 
-        connection.query(query, function (err, cities) {
-            connection.release();
+        conn.query(query, function (err, cities) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
                 callback(null, cities);
             }
         });
-    }, callback);
+    }
 }
 
 module.exports = {

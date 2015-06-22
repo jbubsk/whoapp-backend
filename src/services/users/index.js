@@ -1,19 +1,30 @@
 "use strict";
 
 var pool = require('../../db-pool'),
+    async = require('async'),
     utils = require('../../utils');
 
-function getUser(params, callback) {
-    pool.getConnection(function (connection) {
-        var query = " SELECT u.username" +
+function getUser(params, done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            findUser
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function findUser(conn, callback) {
+        var query = " SELECT u.username, u.network_status" +
             " FROM user as u" +
-            //" JOIN" +
-            //" location as l" +
+            " LEFT JOIN" +
+            " location as l" +
+            " ON u.id=l.user_id" +
             " WHERE" +
             " username = '" + params.username + "'";
 
-        connection.query(query, function (err, users) {
-            connection.release();
+        conn.query(query, function (err, users) {
+            conn.release();
             if (err) {
                 callback(err, false);
             } else if (users instanceof Array && users.length > 0) {
@@ -22,15 +33,24 @@ function getUser(params, callback) {
                 callback(null, false);
             }
         });
-    }, callback)
+    }
 }
 
-function addInterests(params, callback){
+function addInterests(params, callback) {
 
 }
 
-function getAllUsers(callback) {
-    pool.getConnection(function (connection) {
+function getAllUsers(done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            getUsers
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function getUsers(conn, callback) {
         var query = " SELECT" +
             " u.id, u.username, u.last_date_activity AS lastDateActivity, us.name AS status" +
             " FROM user" +
@@ -40,24 +60,32 @@ function getAllUsers(callback) {
             " ON" +
             " us.id=u.user_status_id";
 
-        connection.query(query, function (err, users) {
-            connection.release();
+        conn.query(query, function (err, users) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
                 callback(null, users);
             }
         });
-    }, callback)
+    }
 }
 
-function createUser(params, callback) {
-    pool.getConnection(function (connection) {
-        var userQuery,
-            userDetailsQuery,
+function createUser(params, done) {
+
+    async.waterfall(
+        [
+            pool.getTransactionalConnection,
+            insertUser,
+            insertUserDetails
+        ],
+        utils.handleTrxDbQuery(done));
+
+    function insertUser(conn, callback) {
+        var query,
             salt = Math.random() + '';
 
-        userQuery = "INSERT INTO user" +
+        query = "INSERT INTO user" +
         "(" +
         "username," +
         "password," +
@@ -84,111 +112,121 @@ function createUser(params, callback) {
         "," + 2 +
         ")";
 
-        connection.beginTransaction(function (err) {
+        conn.query(query, function (err, user) {
             if (err) {
-                callback(err, null);
+                return callback(err, conn, null);
             }
-            connection.query(userQuery, function (err, user) {
-                if (err) {
-                    connection.rollback(function () {
-                        throw err;
-                    });
-                    callback(err, null);
-                } else {
-                    userDetailsQuery = "INSERT INTO user_details" +
-                    "(" +
-                    "email," +
-                    "user_id" +
-                    ")" +
+            return callback(null, conn, user.insertId);
+        });
+    }
 
-                    "VALUES" +
+    function insertUserDetails(conn, userId, callback) {
+        var query = "INSERT INTO user_details" +
+            "(" +
+            "email," +
+            "user_id" +
+            ")" +
 
-                    "(" +
-                    "'" + params.email + "'" +
-                    "," + user.insertId +
-                    ")";
+            "VALUES" +
 
-                    connection.query(userDetailsQuery, function (err, userDetails) {
-                        if (err) {
-                            connection.rollback(function () {
-                                throw err;
-                            });
-                            callback(err, null);
-                        } else {
-                            connection.commit(function (err) {
-                                if (err) {
-                                    connection.rollback(function () {
-                                        throw err;
-                                    });
-                                }
-                                connection.release();
-                                callback(null, {
-                                    id: user.insertId,
-                                    status: 'active',
-                                    lastDateActivity: utils.getFormattedDate(new Date())
-                                });
-                            });
-                        }
-                    });
-                }
+            "(" +
+            "'" + params.email + "'" +
+            "," + userId +
+            ")";
+
+        conn.query(query, function (err, userDetails) {
+            if (err) {
+                return callback(err, conn, null);
+            }
+            return callback(null, conn, {
+                id: userId,
+                status: 'active',
+                lastDateActivity: utils.getFormattedDate(new Date())
             });
         });
-    }, callback)
+    }
 }
 
-function setNetworkStatus(params, callback) {
-    pool.getConnection(function (connection) {
+function setNetworkStatus(params, done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            setNetStatus
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function setNetStatus(conn, callback) {
         var query = " UPDATE user" +
             " SET network_status=" + params.networkStatus +
             " WHERE" +
             " username='" + params.username + "'";
 
-        connection.query(query, function (err, result) {
-            connection.release();
+        conn.query(query, function (err, result) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
                 callback(null, "network status is updated");
             }
         });
-    }, callback)
+    }
 }
 
 function getUserById(id, done) {
-    pool.getConnection(function (connection) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            getUser
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function getUser(conn, callback) {
         var query = " SELECT * FROM user" +
             " WHERE" +
             " id= " + id;
 
-        connection.query(query, function (err, users) {
-            connection.release();
+        conn.query(query, function (err, users) {
+            conn.release();
             if (err) {
-                done(err, null);
+                callback(err, null);
             } else if (users instanceof Array && users.length > 0) {
-                done(null, users[0]);
+                callback(null, users[0]);
             } else {
-                done(null, "user not found");
+                callback(null, "user not found");
             }
         });
-    }, done)
+    }
 }
 
 function deleteUser(id, done) {
-    pool.getConnection(function (connection) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            deleteUserById
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function deleteUserById(conn, callback) {
         var query = " UPDATE user" +
             " SET user_status_id=1" +
             " WHERE" +
             " id=" + id;
 
-        connection.query(query, function (err, result) {
-            connection.release();
+        conn.query(query, function (err, result) {
+            conn.release();
             if (err) {
-                done(err, null);
+                callback(err, null);
             } else {
-                done(null, {result: result, message: "user marked as deleted"});
+                callback(null, {result: result, message: "user marked as deleted"});
             }
         });
-    }, done)
+    }
 }
 
 module.exports = {

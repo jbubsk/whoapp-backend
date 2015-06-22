@@ -1,15 +1,15 @@
-var mysql    = require('mysql'),
-    config   = require('./config'),
-    logger   = require('./logger-winston'),
+var mysql = require('mysql'),
+    config = require('./config'),
+    logger = require('./logger-winston'),
     database = config.database;
 
 var pool = mysql.createPool({
     connectionLimit: database.poolSize,
-    host           : database.host,
-    database       : database.schema,
-    user           : database.user,
-    password       : database.password,
-    debug          : config.debug
+    host: database.host,
+    database: database.schema,
+    user: database.user,
+    password: database.password,
+    debug: config.debug
 });
 
 var connectionLog = "Connected to DB:\n\t" +
@@ -21,7 +21,7 @@ var connectionLog = "Connected to DB:\n\t" +
 logger.info(connectionLog);
 
 
-function getConnection(successCallback, errorCallback) {
+function getPoolConnection(successCallback, errorCallback) {
 
     function callback(err, connection) {
         if (err) {
@@ -39,6 +39,26 @@ function getConnection(successCallback, errorCallback) {
     return pool.getConnection(callback);
 }
 
+
+function getConnection(callback) {
+    getPoolConnection(function (conn) {
+        callback(null, conn);
+    }, callback);
+}
+
+function getTransactionalConnection(callback) {
+    getPoolConnection(function (conn) {
+        conn.beginTransaction(function (err) {
+            if (err) {
+                callback(err, {conn: conn});
+            } else {
+                callback(null, conn);
+            }
+        });
+    }, callback);
+}
+
 module.exports = {
-    getConnection: getConnection
+    getConnection: getConnection,
+    getTransactionalConnection: getTransactionalConnection
 };

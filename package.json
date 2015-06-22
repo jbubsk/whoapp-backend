@@ -25,6 +25,9 @@
     "dev-debug-brk": "NODE_ENV=development node --debug-brk=5858 server.js",
     "test": "NODE_ENV=test mocha test/db_suites",
     "test-places": "NODE_ENV=test mocha test/db_suites/places.js",
+    "test-cities": "NODE_ENV=test mocha test/db_suites/cities.js",
+    "test-interests": "NODE_ENV=test mocha test/db_suites/interests.js",
+    "test-users": "NODE_ENV=test mocha test/db_suites/users.js",
     "git-push-openshift": "git pull --rebase openshift master && git push openshift master"
   },
   "devDependencies": {

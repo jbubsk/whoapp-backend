@@ -10,7 +10,7 @@ describe("DB -> Places suites -> ", function () {
 
     it("delete all places", function (done) {
 
-        pool.getConnection(function (connection) {
+        pool.getConnection(function (err, connection) {
             connection.query("DELETE FROM place_details WHERE id > 0", function (err) {
                 expect(err).to.equal(null, "error should equal NULL");
                 connection.query("DELETE FROM place WHERE id > 0", function (err) {

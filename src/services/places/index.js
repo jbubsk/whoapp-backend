@@ -2,51 +2,19 @@
 
 var pool = require('../../db-pool'),
     logger = require('../../logger-winston'),
-    async = require('async');
-
-function getConnection(callback) {
-    pool.getConnection(function (conn) {
-        callback(null, conn);
-    }, callback);
-}
-
-function getTransactionalConnection(callback) {
-    pool.getConnection(function (conn) {
-        conn.beginTransaction(function (err) {
-            if (err) {
-                callback(err, {conn: conn});
-            } else {
-                callback(null, conn);
-            }
-        });
-    }, callback);
-}
+    async = require('async'),
+    utils = require('../../utils');
 
 function addPlace(params, done) {
 
     async.waterfall(
         [
-            getTransactionalConnection,
+            pool.getTransactionalConnection,
             insertPlace,
             insertPlaceDetails,
             insertPlaceLocation
         ],
-
-        function (err, conn, result) {
-            if (err) {
-                done(err, null);
-            } else {
-                conn.commit(function (err) {
-                    if (err) {
-                        conn.rollback(function () {
-                            throw err;
-                        });
-                    }
-                    done(null, result);
-                });
-            }
-            conn.release();
-        });
+        utils.handleTrxDbQuery(done));
 
     function insertPlace(conn, callback) {
         var placeStatusId = 3,  // inactive
@@ -123,17 +91,10 @@ function getAllPlaces(done) {
 
     async.waterfall(
         [
-            getConnection,
+            pool.getConnection,
             getPlaces
         ],
-
-        function (err, result) {
-            if (err) {
-                done(err)
-            } else {
-                done(null, result);
-            }
-        });
+        utils.handleDbQuery(done));
 
     function getPlaces(conn, callback) {
         var query = "SELECT" +
@@ -167,26 +128,11 @@ function getAllPlaces(done) {
 function deletePlace(placeId, done) {
     async.waterfall(
         [
-            getTransactionalConnection,
+            pool.getTransactionalConnection,
             deleteFromPlaceDetails,
             deleteFromPlace
         ],
-
-        function (err, conn, result) {
-            if (err) {
-                done(err, null);
-            } else {
-                conn.commit(function (err) {
-                    if (err) {
-                        conn.rollback(function () {
-                            throw err;
-                        });
-                    }
-                    done(null, result);
-                });
-            }
-            conn.release();
-        });
+        utils.handleTrxDbQuery(done));
 
     function deleteFromPlaceDetails(conn, callback) {
         var query = "DELETE FROM place_details" +

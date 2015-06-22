@@ -5,7 +5,7 @@ var chai = require('chai'),
 
 describe("DB -> Users suites -> ", function () {
     var pool = require('../../src/db-pool'),
-        userService = require('../../src/services/user'),
+        userService = require('../../src/services/users'),
         user,
         userId,
         password = "qweqweqwe5",
@@ -14,7 +14,7 @@ describe("DB -> Users suites -> ", function () {
     it("delete all users", function (done) {
 
         pool.getConnection(
-            function (connection) {
+            function (err, connection) {
                 connection.query("DELETE FROM user_details WHERE id > 0", function (err, result) {
                     if (!err) {
                         connection.query("DELETE FROM user WHERE id > 0", function (err, result) {
@@ -83,6 +83,8 @@ describe("DB -> Users suites -> ", function () {
                 networkStatus: newNetworkStatus,
                 username: user.username
             }, function (err, result) {
+            console.log('***********');
+            console.log(result);
                 expect(err).to.equal(null, "error should equal NULL");
                 expect(result).to.equal("network status is updated");
 

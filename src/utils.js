@@ -24,12 +24,41 @@ module.exports = {
         }
         return date;
     },
+
     getFormattedDate: function (date) {
         return moment(moment(date)).format('YYYY-MM-DD HH:mm');
     },
 
-
     encryptPwd: function (password, salt) {
         return crypto.createHmac('sha1', salt).update(password).digest('hex');
+    },
+
+    handleDbQuery: function (done) {
+        return function (err, result) {
+
+            if (err) {
+                done(err)
+            } else {
+                done(null, result);
+            }
+        }
+    },
+
+    handleTrxDbQuery: function (done) {
+        return function (err, conn, result) {
+            if (err) {
+                done(err, null);
+            } else {
+                conn.commit(function (err) {
+                    if (err) {
+                        conn.rollback(function () {
+                            throw err;
+                        });
+                    }
+                    done(null, result);
+                });
+            }
+            conn.release();
+        }
     }
 };

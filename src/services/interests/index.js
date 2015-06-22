@@ -1,14 +1,27 @@
-var pool = require('../../db-pool');
+"use strict";
 
-function addItem(name, callback) {
-    pool.getConnection(function (connection) {
+var pool = require('../../db-pool'),
+    async = require('async'),
+    utils = require('../../utils');
+
+function addItem(name, done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            addInterest
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function addInterest(conn, callback) {
         var query = "INSERT INTO interest" +
             " (name)" +
             " values" +
             " ('" + name + "')";
 
-        connection.query(query, function (err, interest) {
-            connection.release();
+        conn.query(query, function (err, interest) {
+            conn.release();
             if (err) {
                 if (err.errno === 1062 || err.code === "ER_DUP_ENTRY") {
                     callback({errorCode: err.errno}, null);
@@ -19,71 +32,107 @@ function addItem(name, callback) {
                 callback(null, {id: interest.insertId});
             }
         });
-    }, callback)
+    }
 }
 
-function getInterestByName(name, callback) {
-    pool.getConnection(function (connection) {
+function getInterestByName(name, done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            getInterest
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function getInterest(conn, callback) {
         var query = "SELECT * FROM interest" +
             " WHERE" +
             " name='" + name + "'";
 
-        connection.query(query, function (err, interest) {
-            connection.release();
+        conn.query(query, function (err, interest) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
                 callback(null, interest.length > 0 ? interest[0] : null);
             }
         });
-    }, callback)
+    }
 }
 
-function getInterestById(id, callback) {
-    pool.getConnection(function (connection) {
+function getInterestById(id, done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            getInterest
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function getInterest(conn, callback) {
         var query = "SELECT * FROM interest" +
             " WHERE" +
             " id=" + id;
 
-        connection.query(query, function (err, interest) {
-            connection.release();
+        conn.query(query, function (err, interest) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
                 callback(null, interest);
             }
         });
-    }, callback)
+    }
 }
 
-function getAllInterests(callback) {
-    pool.getConnection(function (connection) {
+function getAllInterests(done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            addInterests
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function addInterests(conn, callback) {
         var query = "SELECT * FROM interest";
 
-        connection.query(query, function (err, interests) {
-            connection.release();
+        conn.query(query, function (err, interests) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
                 callback(null, interests);
             }
         });
-    }, callback)
+    }
 }
 
-function deleteItem(id, callback) {
-    pool.getConnection(function (connection) {
+function deleteItem(id, done) {
+
+    async.waterfall(
+        [
+            pool.getConnection,
+            deleteInterest
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function deleteInterest(conn, callback) {
         var query = "DELETE FROM interest WHERE id=" + id;
 
-        connection.query(query, function (err, result) {
-            connection.release();
+        conn.query(query, function (err, result) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
                 callback(null, result);
             }
         });
-    }, callback)
+    }
 }
 
 module.exports = {
