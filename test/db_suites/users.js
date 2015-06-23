@@ -1,7 +1,10 @@
+"use strict";
+
 var chai = require('chai'),
     assert = chai.assert,
     expect = chai.expect,
-    should = chai.should();
+    should = chai.should(),
+    async = require('async');
 
 describe("DB -> Users suites -> ", function () {
     var pool = require('../../src/db-pool'),
@@ -13,22 +16,49 @@ describe("DB -> Users suites -> ", function () {
 
     it("delete all users", function (done) {
 
-        pool.getConnection(
-            function (err, connection) {
-                connection.query("DELETE FROM user_details WHERE id > 0", function (err, result) {
-                    if (!err) {
-                        connection.query("DELETE FROM user WHERE id > 0", function (err, result) {
-                            if (!err) {
-                                done();
-                            }
-                        });
-                    }
-                });
-            },
-            function (err) {
-                console.log(err);
-                done();
+        async.waterfall(
+            [
+                pool.getConnection,
+                deleteUserDetails,
+                deleteUserLocation,
+                deleteUser
+            ],
+            function (err, conn) {
+                conn.release();
+                if(err){
+                    console.log(err);
+                    return done();
+                }
+                return done();
+            }
+        );
+
+        function deleteUserDetails(conn, callback) {
+            conn.query("DELETE FROM user_details WHERE id > 0", function (err, result) {
+                if (err) {
+                    return callback(err, conn);
+                }
+                return callback(null, conn);
             });
+        }
+
+        function deleteUserLocation(conn, callback) {
+            conn.query("DELETE FROM location WHERE user_id > 0", function (err, result) {
+                if (err) {
+                    return callback(err, conn);
+                }
+                return callback(null, conn);
+            });
+        }
+
+        function deleteUser(conn, callback) {
+            conn.query("DELETE FROM user WHERE id > 0", function (err, result) {
+                if (err) {
+                    return callback(err, conn);
+                }
+                return callback(null, conn);
+            });
+        }
     });
 
     it("save first user", function (done) {
@@ -83,8 +113,8 @@ describe("DB -> Users suites -> ", function () {
                 networkStatus: newNetworkStatus,
                 username: user.username
             }, function (err, result) {
-            console.log('***********');
-            console.log(result);
+                console.log('***********');
+                console.log(result);
                 expect(err).to.equal(null, "error should equal NULL");
                 expect(result).to.equal("network status is updated");
 

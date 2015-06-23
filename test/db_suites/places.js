@@ -64,6 +64,15 @@ describe("DB -> Places suites -> ", function () {
         });
     });
 
+    it("get place by id", function (done) {
+
+        placeService.getPlace(placeId, function (err, result) {
+            expect(err).to.equal(null, "error should equal NULL");
+            expect(result[0].id).to.equal(placeId, "result[0].id should equal " + placeId);
+            done();
+        });
+    });
+
     it("delete place by id", function (done) {
 
         placeService.deletePlace(placeId, function (err, result) {

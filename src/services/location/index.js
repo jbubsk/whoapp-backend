@@ -1,6 +1,8 @@
 "use strict";
 
-var poolConnection = require('../../db-pool');
+var pool = require('../../db-pool'),
+    async = require('async'),
+    utils = require('../../utils');
 
 function getLocation(callback) {
     //User.find({online: true}, 'username latitude longitude', function (err, location) {
@@ -12,12 +14,23 @@ function getLocation(callback) {
     //});
 }
 
-function setLocation(params, callback) {
-    var query = '';
+function setLocation(params, done) {
 
-    poolConnection.getConnection(function (connection) {
-        connection.query(query, function (err, result) {
-            connection.release();
+    async.waterfall(
+        [
+            pool.getConnection,
+            insertLocation
+        ],
+        utils.handleDbQuery(done)
+    );
+    var query = 'UPDATE location SET' +
+        ' latitude=' + params.latitude +
+        ',longitude=' + params.longitude +
+        ' WHERE user_id=' + params.userId;
+
+    function insertLocation(conn, callback) {
+        conn.query(query, function (err, result) {
+            conn.release();
             if (err) {
                 callback(err, null);
             } else {
@@ -25,7 +38,7 @@ function setLocation(params, callback) {
             }
 
         });
-    }, callback)
+    }
 }
 
 module.exports = {

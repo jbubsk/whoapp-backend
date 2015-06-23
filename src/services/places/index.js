@@ -72,8 +72,8 @@ function addPlace(params, done) {
             ")" +
             " VALUES" +
             " (" +
-            params.latitude.toFixed(7) +
-            "," + params.longitude.toFixed(7) +
+            params.latitude +
+            "," + params.longitude +
             "," + placeId +
             ")";
 
@@ -163,8 +163,30 @@ function deletePlace(placeId, done) {
     }
 }
 
+function getPlace(placeId, done) {
+    async.waterfall(
+        [
+            pool.getConnection,
+            getPlaceById
+        ],
+        utils.handleDbQuery(done));
+
+    function getPlaceById(conn, callback) {
+        var query = "SELECT * FROM place WHERE id=" + placeId;
+
+        conn.query(query, function (err, place) {
+            conn.release();
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, place);
+        });
+    }
+}
+
 module.exports = {
     addPlace: addPlace,
     getAllPlaces: getAllPlaces,
+    getPlace: getPlace,
     deletePlace: deletePlace
 };

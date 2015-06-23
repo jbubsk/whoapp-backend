@@ -32,8 +32,20 @@ function deletePlace(req, res, next) {
     })
 }
 
+function getPlace(req, res, next) {
+    placesService.getPlace(req.params.id, function (err, result) {
+        if (err) {
+            res.status(err.status || 400).send({err: err});
+        } else {
+            logger.debug(result);
+            res.json({result: result});
+        }
+    })
+}
+
 module.exports = {
     getPlaces: getPlaces,
     addPlace: addPlace,
+    getPlace: getPlace,
     deletePlace: deletePlace
 };

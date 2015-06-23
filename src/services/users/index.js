@@ -15,11 +15,11 @@ function getUser(params, done) {
     );
 
     function findUser(conn, callback) {
-        var query = " SELECT u.username, u.network_status" +
+        var query = " SELECT *" +
             " FROM user as u" +
-            " LEFT JOIN" +
-            " location as l" +
-            " ON u.id=l.user_id" +
+                //" LEFT JOIN" +
+                //" location as l" +
+                //" ON u.id=l.user_id" +
             " WHERE" +
             " username = '" + params.username + "'";
 
@@ -53,12 +53,13 @@ function getAllUsers(done) {
     function getUsers(conn, callback) {
         var query = " SELECT" +
             " u.id, u.username, u.last_date_activity AS lastDateActivity, us.name AS status" +
+            " ,l.latitude, l.longitude" +
             " FROM user" +
             " AS u" +
-            " JOIN" +
-            " user_status as us" +
-            " ON" +
-            " us.id=u.user_status_id";
+            " LEFT JOIN location as l" +
+            " ON l.user_id=u.id" +
+            " LEFT JOIN user_status as us" +
+            " ON us.id=u.user_status_id";
 
         conn.query(query, function (err, users) {
             conn.release();
@@ -77,7 +78,8 @@ function createUser(params, done) {
         [
             pool.getTransactionalConnection,
             insertUser,
-            insertUserDetails
+            insertUserDetails,
+            insertUserLocation
         ],
         utils.handleTrxDbQuery(done));
 
@@ -135,6 +137,30 @@ function createUser(params, done) {
             ")";
 
         conn.query(query, function (err, userDetails) {
+            if (err) {
+                return callback(err, conn, null);
+            }
+            return callback(null, conn, userId);
+        });
+    }
+
+    function insertUserLocation(conn, userId, callback) {
+        var query = "INSERT INTO location" +
+            " (" +
+            "latitude" +
+            ",longitude" +
+            ",user_id" +
+            ")" +
+
+            "VALUES" +
+
+            " (" +
+            (params.latitude || 0) +
+            "," + (params.longitude || 0) +
+            "," + userId +
+            ")";
+
+        conn.query(query, function (err, location) {
             if (err) {
                 return callback(err, conn, null);
             }
