@@ -43,9 +43,21 @@ function getPlace(req, res, next) {
     })
 }
 
+function updatePlace(req, res, next) {
+    placesService.updatePlace(req.body, function (err, result) {
+        if (err) {
+            res.status(err.status || 400).send({err: err});
+        } else {
+            logger.debug(result);
+            res.json({result: result});
+        }
+    })
+}
+
 module.exports = {
     getPlaces: getPlaces,
     addPlace: addPlace,
     getPlace: getPlace,
-    deletePlace: deletePlace
+    deletePlace: deletePlace,
+    updatePlace: updatePlace
 };

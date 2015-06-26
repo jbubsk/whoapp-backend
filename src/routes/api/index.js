@@ -25,6 +25,7 @@ router.delete('/interests/:id', interests.deleteItem);
 router.get('/places', places.getPlaces);
 router.get('/places/:id', places.getPlace);
 router.post('/places', places.addPlace);
+router.put('/places', places.updatePlace);
 router.delete('/places/:id', places.deletePlace);
 
 router.get('/cities/:name', cities.getCitiesByName);
