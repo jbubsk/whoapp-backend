@@ -5,6 +5,10 @@ var pool = require('../../db-pool'),
     async = require('async'),
     utils = require('../../utils');
 
+/*
+ * params: [name,description,address,cityId,latitude,longitude,interestsIds]
+ *
+ * */
 function addPlace(params, done) {
 
     async.waterfall(
@@ -12,7 +16,8 @@ function addPlace(params, done) {
             pool.getTransactionalConnection,
             insertPlace,
             insertPlaceDetails,
-            insertPlaceLocation
+            insertPlaceLocation,
+            _insertPlaceInterest
         ],
         utils.handleTrxDbQuery(done));
 
@@ -31,7 +36,7 @@ function addPlace(params, done) {
 
         conn.query(query, function (err, place) {
             if (err) {
-                callback(err, conn, null);
+                callback(err, conn);
             } else {
                 callback(null, conn, place.insertId);
             }
@@ -56,7 +61,7 @@ function addPlace(params, done) {
 
         conn.query(query, function (err) {
             if (err) {
-                callback(err, conn, null);
+                callback(err, conn);
             } else {
                 callback(null, conn, placeId);
             }
@@ -79,12 +84,13 @@ function addPlace(params, done) {
 
         conn.query(query, function (err) {
             if (err) {
-                callback(err, conn, null);
+                callback(err, conn);
             } else {
-                callback(null, conn, null);
+                callback(null, conn, placeId, params.interestsIds);
             }
         });
     }
+
 }
 
 function getAllPlaces(done) {
@@ -172,7 +178,17 @@ function getPlace(placeId, done) {
         utils.handleDbQuery(done));
 
     function getPlaceById(conn, callback) {
-        var query = "SELECT * FROM place WHERE id=" + placeId;
+        var query = "SELECT p.id, p.name, ps.name as status, pd.address, pd.description, pd.site, pd.phone, pd.proposition, GROUP_CONCAT(i.id) as interestsIds" +
+            " FROM place as p" +
+            " JOIN place_status as ps" +
+            " ON p.place_status_id=ps.id" +
+            " JOIN place_details as pd" +
+            " ON p.id=pd.place_id" +
+            " LEFT JOIN place_interest as pi" +
+            " ON p.id=pi.place_id" +
+            " LEFT JOIN interest as i" +
+            " ON i.id=pi.interests_id" +
+            " WHERE p.id=" + placeId;
 
         conn.query(query, function (err, place) {
             conn.release();
@@ -184,9 +200,97 @@ function getPlace(placeId, done) {
     }
 }
 
+/*
+ * params: [id,name,description,address,phone,site,proposition,interestsIds]
+ *
+ * */
+function updatePlace(params, done) {
+    var placeId = params.id;
+
+    async.waterfall(
+        [
+            pool.getTransactionalConnection,
+            updatePlaceTable,
+            updatePlaceDetailsTable,
+            deletePlaceInterests,
+            _insertPlaceInterest
+        ],
+        utils.handleTrxDbQuery(done));
+
+    function updatePlaceTable(conn, callback) {
+        var query = "UPDATE place" +
+            " SET" +
+            " name='" + params.name + "'" +
+            " WHERE id=" + placeId;
+
+        conn.query(query, function (err, result) {
+            if (err) {
+                return callback(err, conn);
+            }
+            return callback(null, conn);
+        });
+    }
+
+    function updatePlaceDetailsTable(conn, callback) {
+        var query = "UPDATE place_details" +
+            " SET" +
+            " description='" + params.description + "'" +
+            " ,phone='" + params.phone + "'" +
+            " ,site='" + params.site + "'" +
+            " ,proposition='" + params.proposition + "'" +
+            " WHERE place_id=" + placeId;
+
+        conn.query(query, function (err, result) {
+            if (err) {
+                return callback(err, conn);
+            }
+            return callback(null, conn);
+        });
+    }
+
+    function deletePlaceInterests(conn, callback) {
+        var deleteQuery = "DELETE FROM place_interest" +
+            " WHERE place_id=" + placeId;
+
+        conn.query(deleteQuery, function (err, result) {
+            if (err) {
+                return callback(err, conn);
+            }
+            return callback(null, conn, placeId, params.interestsIds);
+        });
+    }
+}
+
+function _insertPlaceInterest(conn, placeId, interestsIds, callback) {
+    var values = '';
+    if (interestsIds && interestsIds instanceof Array && interestsIds.length > 0) {
+
+        interestsIds.forEach(function (id, index) {
+            values += index === 0 ? '' : ',';
+            values += ' (' + placeId + ',' + id + ')';
+        });
+        var query = " INSERT INTO place_interest" +
+            " (" +
+            "place_id" +
+            ",interests_id" +
+            ")" +
+            " VALUES" + values;
+
+        conn.query(query, function (err) {
+            if (err) {
+                return callback(err, conn);
+            }
+            return callback(null, conn, placeId);
+        });
+    } else {
+        return callback(null, conn, placeId);
+    }
+}
+
 module.exports = {
     addPlace: addPlace,
     getAllPlaces: getAllPlaces,
     getPlace: getPlace,
-    deletePlace: deletePlace
+    deletePlace: deletePlace,
+    updatePlace: updatePlace
 };

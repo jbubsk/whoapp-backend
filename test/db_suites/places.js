@@ -46,9 +46,11 @@ describe("DB -> Places suites -> ", function () {
             cityId: 13658,
             address: 'Москва, проспект Таганский, 5',
             latitude: 54.8342054021,
-            longitude: 33.239006415
-        }, function (err) {
+            longitude: 33.239006415,
+            interestsIds: [42, 43]
+        }, function (err, pId) {
             expect(err).to.equal(null, "error should equal NULL");
+            placeId = pId;
             done();
         });
     });
@@ -59,7 +61,6 @@ describe("DB -> Places suites -> ", function () {
             expect(err).to.equal(null, "error should equal NULL");
             places.should.be.a('array');
             places.should.have.length(2);
-            placeId = places[0].id;
             done();
         });
     });
@@ -69,7 +70,36 @@ describe("DB -> Places suites -> ", function () {
         placeService.getPlace(placeId, function (err, result) {
             expect(err).to.equal(null, "error should equal NULL");
             expect(result[0].id).to.equal(placeId, "result[0].id should equal " + placeId);
+            result[0].interestsIds.should.be.a("string", "result[0].description should be a string");
+            console.log('------');
+            console.log(result[0].interestsIds);
             done();
+        });
+    });
+
+    it("update place", function (done) {
+        var description = "some description";
+
+        placeService.updatePlace({
+            id: placeId,
+            name: 'name',
+            address: 'address',
+            site: 'site',
+            phone: 'phone',
+            description: description,
+            proposition: 'proposition',
+            interestsIds: [42, 43]
+        }, function (err, result) {
+            expect(err).to.equal(null, "error should equal NULL");
+
+            placeService.getPlace(placeId, function (err, result) {
+                expect(err).to.equal(null, "error should equal NULL");
+                expect(result[0].id).to.equal(placeId, "result[0].id should equal " + placeId);
+                expect(result[0].description).to.equal(description, "result[0].description should equal " + description);
+
+                result[0].interestsIds.should.be.a("string", "result[0].description should be a string");
+                done();
+            });
         });
     });
 
