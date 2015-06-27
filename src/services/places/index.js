@@ -24,10 +24,7 @@ function addPlace(params, done) {
     function insertPlace(conn, callback) {
         var placeStatusId = 3,  // inactive
             query = "INSERT INTO place" +
-                " (" +
-                "name," +
-                "place_status_id" +
-                ")" +
+                " (name, place_status_id)" +
                 " values" +
                 " (" +
                 "'" + params.name + "'" +
@@ -45,12 +42,7 @@ function addPlace(params, done) {
 
     function insertPlaceDetails(conn, placeId, callback) {
         var query = "INSERT INTO place_details" +
-            " (" +
-            "description" +
-            ",address" +
-            ",place_id" +
-            ",city_id" +
-            ")" +
+            " (description ,address ,place_id ,city_id)" +
             " values" +
             " (" +
             "'" + (params.description || '') + "'" +
@@ -70,11 +62,7 @@ function addPlace(params, done) {
 
     function insertPlaceLocation(conn, placeId, callback) {
         var query = " INSERT INTO location" +
-            " (" +
-            "latitude" +
-            ",longitude" +
-            ",place_id" +
-            ")" +
+            " (latitude, longitude, place_id)" +
             " VALUES" +
             " (" +
             params.latitude +
@@ -105,20 +93,13 @@ function getAllPlaces(done) {
     function getPlaces(conn, callback) {
         var query = "SELECT" +
             " p.id, p.name, pd.description, c.name_ru as city, pd.address, l.latitude, l.longitude" +
-            " FROM" +
-            " place as p" +
-            " JOIN" +
-            " place_details as pd" +
-            " JOIN" +
-            " city as c" +
-            " JOIN" +
-            " location as l" +
-            " ON" +
-            " p.id = pd.place_id" +
-            " AND" +
-            " c.id = pd.city_id" +
-            " AND" +
-            " l.place_id = p.id";
+            " FROM place as p" +
+            " JOIN place_details as pd" +
+            " JOIN city as c" +
+            " JOIN location as l" +
+            " ON p.id = pd.place_id" +
+            " AND c.id = pd.city_id" +
+            " AND l.place_id = p.id";
 
         conn.query(query, function (err, places) {
             conn.release();
@@ -270,10 +251,7 @@ function _insertPlaceInterest(conn, placeId, interestsIds, callback) {
             values += ' (' + placeId + ',' + id + ')';
         });
         var query = " INSERT INTO place_interest" +
-            " (" +
-            "place_id" +
-            ",interests_id" +
-            ")" +
+            " (place_id, interests_id)" +
             " VALUES" + values;
 
         conn.query(query, function (err) {
