@@ -220,10 +220,10 @@ function updatePlace(params, done) {
     function updatePlaceTable(conn, callback) {
         var query = "UPDATE place" +
             " SET" +
-            " name='" + params.name + "'" +
+            " name=" + utils.str(params.name) +
             " WHERE id=" + placeId;
 
-        conn.query(query, function (err, result) {
+        conn.query(query, function (err) {
             if (err) {
                 return callback(err, conn);
             }
@@ -234,13 +234,13 @@ function updatePlace(params, done) {
     function updatePlaceDetailsTable(conn, callback) {
         var query = "UPDATE place_details" +
             " SET" +
-            " description='" + params.description + "'" +
-            " ,phone='" + params.phone + "'" +
-            " ,site='" + params.site + "'" +
-            " ,proposition='" + params.proposition + "'" +
+            " description=" + utils.str(params.description) +
+            " ,phone=" + utils.str(params.phone) +
+            " ,site=" + utils.str(params.site) +
+            " ,proposition=" + utils.str(params.proposition) +
             " WHERE place_id=" + placeId;
 
-        conn.query(query, function (err, result) {
+        conn.query(query, function (err) {
             if (err) {
                 return callback(err, conn);
             }
@@ -252,7 +252,7 @@ function updatePlace(params, done) {
         var deleteQuery = "DELETE FROM place_interest" +
             " WHERE place_id=" + placeId;
 
-        conn.query(deleteQuery, function (err, result) {
+        conn.query(deleteQuery, function (err) {
             if (err) {
                 return callback(err, conn);
             }

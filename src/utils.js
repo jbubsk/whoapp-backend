@@ -60,5 +60,12 @@ module.exports = {
             }
             conn.release();
         }
+    },
+
+    str: function (value) {
+        if (value) {
+            return "'" + value + "'";
+        }
+        return null;
     }
 };
