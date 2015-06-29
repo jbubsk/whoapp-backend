@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var pool = require('../../db-pool'),
     async = require('async'),
@@ -15,21 +15,21 @@ function addItem(name, done) {
     );
 
     function addInterest(conn, callback) {
-        var query = "INSERT INTO interest" +
-            " (name)" +
-            " values" +
-            " ('" + name + "')";
+        var query = 'INSERT INTO interest' +
+            ' (name)' +
+            ' VALUES' +
+            ' ("' + name + '")';
 
         conn.query(query, function (err, interest) {
             conn.release();
             if (err) {
-                if (err.errno === 1062 || err.code === "ER_DUP_ENTRY") {
-                    callback({errorCode: err.errno}, null);
-                } else {
-                    callback(err, null);
-                }
+                callback({
+                    errorCode: err.errno
+                }, null);
             } else {
-                callback(null, {id: interest.insertId});
+                callback(null, {
+                    id: interest.insertId
+                });
             }
         });
     }
@@ -46,9 +46,9 @@ function getInterestByName(name, done) {
     );
 
     function getInterest(conn, callback) {
-        var query = "SELECT * FROM interest" +
-            " WHERE" +
-            " name='" + name + "'";
+        var query = 'SELECT * FROM interest' +
+            ' WHERE' +
+            ' name=' + utils.str(name);
 
         conn.query(query, function (err, interest) {
             conn.release();
@@ -72,9 +72,9 @@ function getInterestById(id, done) {
     );
 
     function getInterest(conn, callback) {
-        var query = "SELECT * FROM interest" +
-            " WHERE" +
-            " id=" + id;
+        var query = 'SELECT * FROM interest' +
+            ' WHERE' +
+            ' id=' + id;
 
         conn.query(query, function (err, interest) {
             conn.release();
@@ -98,7 +98,7 @@ function getAllInterests(done) {
     );
 
     function addInterests(conn, callback) {
-        var query = "SELECT * FROM interest";
+        var query = 'SELECT * FROM interest';
 
         conn.query(query, function (err, interests) {
             conn.release();
@@ -122,12 +122,14 @@ function deleteItem(id, done) {
     );
 
     function deleteInterest(conn, callback) {
-        var query = "DELETE FROM interest WHERE id=" + id;
+        var query = 'DELETE FROM interest WHERE id=' + id;
 
         conn.query(query, function (err, result) {
             conn.release();
             if (err) {
-                callback(err, null);
+                callback({
+                    errorCode: err.errno
+                }, null);
             } else {
                 callback(null, result);
             }
@@ -135,10 +137,35 @@ function deleteItem(id, done) {
     }
 }
 
+function updateItem(model, done) {
+    async.waterfall(
+        [
+            pool.getConnection,
+            updateInterest
+        ],
+        utils.handleDbQuery(done)
+    );
+
+    function updateInterest(conn, callback) {
+        var query = 'UPDATE interest' +
+            ' SET name=' + utils.str(model.name) +
+            ' WHERE id=' + model.id;
+
+        conn.query(query, function (err) {
+            conn.release();
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, 'interest is updated');
+        });
+    }
+}
+
 module.exports = {
-    addItem: addItem,
-    getInterestByName: getInterestByName,
-    getInterestById: getInterestById,
-    getAllInterests: getAllInterests,
-    deleteItem: deleteItem
+    add: addItem,
+    update: updateItem,
+    getByName: getInterestByName,
+    getById: getInterestById,
+    getAll: getAllInterests,
+    remove: deleteItem
 };

@@ -18,9 +18,10 @@ router.delete('/users/:id', users.deleteUser);
 router.get('/location', location.getLocation);
 router.post('/location', location.setLocation);
 
-router.get('/interests', interests.getAllInterests);
-router.post('/interests', interests.addItem);
-router.delete('/interests/:id', interests.deleteItem);
+router.get('/interests', interests.getAll);
+router.post('/interests', interests.add);
+router.put('/interests', interests.update);
+router.delete('/interests/:id', interests.remove);
 
 router.get('/places', places.getPlaces);
 router.get('/places/:id', places.getPlace);

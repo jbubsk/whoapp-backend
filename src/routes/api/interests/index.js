@@ -1,7 +1,9 @@
-var interestService = require('../../../services/interests');
+"use strict";
+
+var service = require('../../../services/interests');
 
 function getAllInterests(req, res, next) {
-    interestService.getAllInterests(function (err, interests) {
+    service.getAll(function (err, interests) {
         if (err) {
             res.status(400).send();
         } else {
@@ -11,7 +13,7 @@ function getAllInterests(req, res, next) {
 }
 
 function deleteItem(req, res, next) {
-    interestService.deleteItem(req.params.id, function (err, result) {
+    service.remove(req.params.id, function (err, result) {
         if (err) {
             res.status(400).json(err);
         } else {
@@ -21,7 +23,7 @@ function deleteItem(req, res, next) {
 }
 
 function addItem(req, res, next) {
-    interestService.addItem(req.body.name, function (err, result) {
+    service.add(req.body.name, function (err, result) {
         if (err) {
             res.status(400).json(err);
         } else {
@@ -30,9 +32,19 @@ function addItem(req, res, next) {
     });
 }
 
+function update(req, res) {
+    service.update(req.body, function (err, result) {
+        if (err) {
+            res.status(400).json(err);
+        } else {
+            res.json({result: result});
+        }
+    })
+}
 
 module.exports = {
-    getAllInterests: getAllInterests,
-    deleteItem: deleteItem,
-    addItem: addItem
+    getAll: getAllInterests,
+    remove: deleteItem,
+    add: addItem,
+    update: update
 };
