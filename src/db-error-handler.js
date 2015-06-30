@@ -1,3 +1,3 @@
-exports.exports = function () {
+exports.exports = function (error) {
     // TODO handle DB errors
 };

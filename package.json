@@ -28,6 +28,7 @@
     "test-cities": "NODE_ENV=test mocha test/db_suites/cities.js",
     "test-interests": "NODE_ENV=test DEBUG=no mocha test/db_suites/interests.js -R list",
     "test-users": "NODE_ENV=test mocha test/db_suites/users.js",
+    "test-location": "NODE_ENV=test mocha test/db_suites/location.js",
     "git-push-openshift": "git pull --rebase openshift master && git push openshift master"
   },
   "devDependencies": {

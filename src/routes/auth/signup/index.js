@@ -5,8 +5,7 @@ function signup(req, res) {
 
     userService.createUser(req.body, function (err) {
         if (err) {
-            res.json({error : err});
-            logger.error('userService.createUser: ' + err);
+            res.status(err.code).json({message: err.message});
         } else {
             res.json({result : 'success'});
         }

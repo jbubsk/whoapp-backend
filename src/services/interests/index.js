@@ -2,7 +2,8 @@
 
 var pool = require('../../db-pool'),
     async = require('async'),
-    utils = require('../../utils');
+    utils = require('../../utils'),
+    handleQuery = require('../../utils').handleQuery;
 
 function addItem(name, done) {
 
@@ -11,7 +12,7 @@ function addItem(name, done) {
             pool.getConnection,
             addInterest
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function addInterest(conn, callback) {
@@ -20,18 +21,9 @@ function addItem(name, done) {
             ' VALUES' +
             ' ("' + name + '")';
 
-        conn.query(query, function (err, interest) {
-            conn.release();
-            if (err) {
-                callback({
-                    errorCode: err.errno
-                }, null);
-            } else {
-                callback(null, {
-                    id: interest.insertId
-                });
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result.insertId];
+        }));
     }
 }
 
@@ -42,7 +34,7 @@ function getInterestByName(name, done) {
             pool.getConnection,
             getInterest
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function getInterest(conn, callback) {
@@ -50,14 +42,9 @@ function getInterestByName(name, done) {
             ' WHERE' +
             ' name=' + utils.str(name);
 
-        conn.query(query, function (err, interest) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, interest.length > 0 ? interest[0] : null);
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 
@@ -68,7 +55,7 @@ function getInterestById(id, done) {
             pool.getConnection,
             getInterest
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function getInterest(conn, callback) {
@@ -76,14 +63,9 @@ function getInterestById(id, done) {
             ' WHERE' +
             ' id=' + id;
 
-        conn.query(query, function (err, interest) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, interest);
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 
@@ -94,20 +76,15 @@ function getAllInterests(done) {
             pool.getConnection,
             addInterests
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function addInterests(conn, callback) {
         var query = 'SELECT * FROM interest';
 
-        conn.query(query, function (err, interests) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, interests);
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 
@@ -118,22 +95,13 @@ function deleteItem(id, done) {
             pool.getConnection,
             deleteInterest
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function deleteInterest(conn, callback) {
         var query = 'DELETE FROM interest WHERE id=' + id;
 
-        conn.query(query, function (err, result) {
-            conn.release();
-            if (err) {
-                callback({
-                    errorCode: err.errno
-                }, null);
-            } else {
-                callback(null, result);
-            }
-        });
+        conn.query(query, handleQuery(conn, callback));
     }
 }
 
@@ -143,7 +111,7 @@ function updateItem(model, done) {
             pool.getConnection,
             updateInterest
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function updateInterest(conn, callback) {
@@ -151,13 +119,7 @@ function updateItem(model, done) {
             ' SET name=' + utils.str(model.name) +
             ' WHERE id=' + model.id;
 
-        conn.query(query, function (err) {
-            conn.release();
-            if (err) {
-                return callback(err, null);
-            }
-            return callback(null, 'interest is updated');
-        });
+        conn.query(query, handleQuery(conn, callback));
     }
 }
 

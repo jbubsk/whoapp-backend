@@ -5,7 +5,7 @@ module.exports = function (req, res, next) {
     if (req.user) {
         authenticationService.logout(req.user.username, function (err, result) {
             if (err) {
-                res.json({status: null, message: 'Some error occurred during logout'});
+                res.status(err.code).json({message: err.message});
             } else {
                 req.logout();
                 res.json({

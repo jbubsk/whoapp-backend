@@ -2,7 +2,8 @@
 
 var pool = require('../../db-pool'),
     async = require('async'),
-    utils = require('../../utils');
+    utils = require('../../utils'),
+    handleQuery = utils.handleQuery;
 
 function getCityIdByName(params, done) {
 
@@ -11,21 +12,16 @@ function getCityIdByName(params, done) {
             pool.getConnection,
             getCityId
         ],
-        utils.handleDbQuery(done));
+        utils.handleDbOperation(done));
 
     function getCityId(conn, callback) {
         var query = "SELECT id FROM city" +
             " WHERE" +
             " name_ru='" + params.name + "'";
 
-        conn.query(query, function (err, cityId) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, cityId);
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 
@@ -36,21 +32,16 @@ function getCitiesByName(searchText, done) {
             pool.getConnection,
             getCities
         ],
-        utils.handleDbQuery(done));
+        utils.handleDbOperation(done));
 
     function getCities(conn, callback) {
         var query = "SELECT name_ru AS nameRu, district_ru AS districtRu, id FROM city" +
             " WHERE" +
             " name_ru LIKE '" + searchText + "%'";
 
-        conn.query(query, function (err, cities) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, cities);
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 

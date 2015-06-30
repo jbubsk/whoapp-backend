@@ -2,7 +2,8 @@
 
 var pool = require('../../db-pool'),
     async = require('async'),
-    utils = require('../../utils');
+    utils = require('../../utils'),
+    handleQuery = utils.handleQuery;
 
 function getUser(params, done) {
 
@@ -11,7 +12,7 @@ function getUser(params, done) {
             pool.getConnection,
             findUser
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function findUser(conn, callback) {
@@ -23,16 +24,9 @@ function getUser(params, done) {
             " WHERE" +
             " username = '" + params.username + "'";
 
-        conn.query(query, function (err, users) {
-            conn.release();
-            if (err) {
-                callback(err, false);
-            } else if (users instanceof Array && users.length > 0) {
-                callback(null, users[0]);
-            } else {
-                callback(null, false);
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 
@@ -47,7 +41,7 @@ function getAllUsers(done) {
             pool.getConnection,
             getUsers
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function getUsers(conn, callback) {
@@ -61,14 +55,9 @@ function getAllUsers(done) {
             " LEFT JOIN user_status as us" +
             " ON us.id=u.user_status_id";
 
-        conn.query(query, function (err, users) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, users);
-            }
-        });
+        conn.query(query, handleQuery(function (users) {
+            return [conn, callback, users];
+        }));
     }
 }
 
@@ -81,7 +70,7 @@ function createUser(params, done) {
             insertUserDetails,
             insertUserLocation
         ],
-        utils.handleTrxDbQuery(done));
+        utils.handleTrxDbOperation(done));
 
     function insertUser(conn, callback) {
         var query,
@@ -114,12 +103,9 @@ function createUser(params, done) {
         "," + 2 +
         ")";
 
-        conn.query(query, function (err, user) {
-            if (err) {
-                return callback(err, conn, null);
-            }
-            return callback(null, conn, user.insertId);
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result.insertId];
+        }));
     }
 
     function insertUserDetails(conn, userId, callback) {
@@ -136,12 +122,9 @@ function createUser(params, done) {
             "," + userId +
             ")";
 
-        conn.query(query, function (err, userDetails) {
-            if (err) {
-                return callback(err, conn, null);
-            }
-            return callback(null, conn, userId);
-        });
+        conn.query(query, handleQuery(function () {
+            return [conn, callback, userId];
+        }));
     }
 
     function insertUserLocation(conn, userId, callback) {
@@ -160,16 +143,13 @@ function createUser(params, done) {
             "," + userId +
             ")";
 
-        conn.query(query, function (err, location) {
-            if (err) {
-                return callback(err, conn, null);
-            }
-            return callback(null, conn, {
+        conn.query(query, handleQuery(function () {
+            return [conn, callback, {
                 id: userId,
                 status: 'active',
                 lastDateActivity: utils.getFormattedDate(new Date())
-            });
-        });
+            }];
+        }));
     }
 }
 
@@ -180,7 +160,7 @@ function setNetworkStatus(params, done) {
             pool.getConnection,
             setNetStatus
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function setNetStatus(conn, callback) {
@@ -189,14 +169,7 @@ function setNetworkStatus(params, done) {
             " WHERE" +
             " username='" + params.username + "'";
 
-        conn.query(query, function (err, result) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, "network status is updated");
-            }
-        });
+        conn.query(query, handleQuery(conn, callback));
     }
 }
 
@@ -207,7 +180,7 @@ function getUserById(id, done) {
             pool.getConnection,
             getUser
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function getUser(conn, callback) {
@@ -215,16 +188,9 @@ function getUserById(id, done) {
             " WHERE" +
             " id= " + id;
 
-        conn.query(query, function (err, users) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else if (users instanceof Array && users.length > 0) {
-                callback(null, users[0]);
-            } else {
-                callback(null, "user not found");
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 
@@ -235,7 +201,7 @@ function deleteUser(id, done) {
             pool.getConnection,
             deleteUserById
         ],
-        utils.handleDbQuery(done)
+        utils.handleDbOperation(done)
     );
 
     function deleteUserById(conn, callback) {
@@ -244,14 +210,7 @@ function deleteUser(id, done) {
             " WHERE" +
             " id=" + id;
 
-        conn.query(query, function (err, result) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, {result: result, message: "user marked as deleted"});
-            }
-        });
+        conn.query(query, handleQuery(conn, callback));
     }
 }
 

@@ -4,7 +4,7 @@ var logger = require('../../../logger-winston'),
 function getPlaces(req, res, next) {
     placesService.getAllPlaces(function (err, places) {
         if (err) {
-            res.status(err.status || 400).send({err: err});
+            res.status(err.code).json({message: err.message});
         } else {
             res.json({result: places});
         }
@@ -14,7 +14,7 @@ function getPlaces(req, res, next) {
 function addPlace(req, res, next) {
     placesService.addPlace(req.body, function (err, result) {
         if (err) {
-            res.status(err.status || 400).send({err: err});
+            res.status(err.code).json({message: err.message});
         } else {
             res.json({result: {id: result}});
         }
@@ -24,7 +24,7 @@ function addPlace(req, res, next) {
 function deletePlace(req, res, next) {
     placesService.deletePlace(req.params.id, function (err, result) {
         if (err) {
-            res.status(err.status || 400).send({err: err});
+            res.status(err.code).json({message: err.message});
         } else {
             logger.debug(result);
             res.json({result: result});
@@ -35,7 +35,7 @@ function deletePlace(req, res, next) {
 function getPlace(req, res, next) {
     placesService.getPlace(req.params.id, function (err, result) {
         if (err) {
-            res.status(err.status || 400).send({err: err});
+            res.status(err.code).json({message: err.message});
         } else {
             logger.debug(result);
             res.json({result: result});
@@ -46,7 +46,7 @@ function getPlace(req, res, next) {
 function updatePlace(req, res, next) {
     placesService.updatePlace(req.body, function (err, result) {
         if (err) {
-            res.status(err.status || 400).send({err: err});
+            res.status(err.code).json({message: err.message});
         } else {
             logger.debug(result);
             res.json({result: result});

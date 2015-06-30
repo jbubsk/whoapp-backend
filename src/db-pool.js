@@ -28,9 +28,9 @@ function getPoolConnection(successCallback, errorCallback) {
             if (connection) {
                 connection.release();
             }
-            var errorMessage = "DB connection error";
+            var errorMessage = "DB_CONN_ERR";
             logger.error(errorMessage);
-            errorCallback(errorMessage, null);
+            errorCallback({code: 500, message: errorMessage}, null);
         } else {
             successCallback(connection);
         }

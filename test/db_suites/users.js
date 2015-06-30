@@ -4,7 +4,8 @@ var chai = require('chai'),
     assert = chai.assert,
     expect = chai.expect,
     should = chai.should(),
-    async = require('async');
+    async = require('async'),
+    handleQuery = require('../../src/utils').handleQuery;
 
 describe("DB -> Users suites -> ", function () {
     var pool = require('../../src/db-pool'),
@@ -25,7 +26,7 @@ describe("DB -> Users suites -> ", function () {
             ],
             function (err, conn) {
                 conn.release();
-                if(err){
+                if (err) {
                     console.log(err);
                     return done();
                 }
@@ -34,30 +35,15 @@ describe("DB -> Users suites -> ", function () {
         );
 
         function deleteUserDetails(conn, callback) {
-            conn.query("DELETE FROM user_details WHERE id > 0", function (err, result) {
-                if (err) {
-                    return callback(err, conn);
-                }
-                return callback(null, conn);
-            });
+            conn.query("DELETE FROM user_details WHERE id > 0", handleQuery(conn, callback));
         }
 
         function deleteUserLocation(conn, callback) {
-            conn.query("DELETE FROM location WHERE user_id > 0", function (err, result) {
-                if (err) {
-                    return callback(err, conn);
-                }
-                return callback(null, conn);
-            });
+            conn.query("DELETE FROM location WHERE user_id > 0", handleQuery(conn, callback));
         }
 
         function deleteUser(conn, callback) {
-            conn.query("DELETE FROM user WHERE id > 0", function (err, result) {
-                if (err) {
-                    return callback(err, conn);
-                }
-                return callback(null, conn);
-            });
+            conn.query("DELETE FROM user WHERE id > 0", handleQuery(conn, callback));
         }
     });
 
@@ -70,7 +56,7 @@ describe("DB -> Users suites -> ", function () {
         };
 
         userService.createUser(user, function (err) {
-            expect(err).to.equal(null, "error should equal NULL");
+            expect(err).to.equal(null);
             i++;
             done();
         });
@@ -85,8 +71,22 @@ describe("DB -> Users suites -> ", function () {
         };
 
         userService.createUser(user, function (err, result) {
-            expect(err).to.equal(null, "error should equal null");
+            expect(err).to.equal(null);
             userId = result.id;
+            done();
+        });
+    });
+
+    it("save third user", function (done) {
+        var username = 'user0';
+        user = {
+            username: username,
+            password: password,
+            email: 'email@mail' + i + '.ru'
+        };
+
+        userService.createUser(user, function (err, result) {
+            expect(err).not.to.equal(null);
             done();
         });
     });
@@ -94,9 +94,11 @@ describe("DB -> Users suites -> ", function () {
     it("get user by username", function (done) {
         userService.getUser({
             username: user.username
-        }, function (err, user) {
-            should.exist(user, 'user should exist');
-            user.username.should.equal(user.username);
+        }, function (err, users) {
+            should.exist(users);
+            users.should.be.a('array');
+            users.length.should.not.equal(0);
+            users[0].username.should.equal(user.username);
             done();
         });
     });
@@ -106,23 +108,26 @@ describe("DB -> Users suites -> ", function () {
 
         userService.getUser({
             username: user.username
-        }, function (err, user) {
-            newNetworkStatus = user.network_status === 0 ? 1 : 0;
+        }, function (err, users) {
+            users.should.be.a('array');
+            users.length.should.not.equal(0);
+            users[0].username.should.equal(user.username);
+            newNetworkStatus = users[0].network_status === 0 ? 1 : 0;
 
             userService.setNetworkStatus({
                 networkStatus: newNetworkStatus,
                 username: user.username
             }, function (err, result) {
-                console.log('***********');
-                console.log(result);
-                expect(err).to.equal(null, "error should equal NULL");
-                expect(result).to.equal("network status is updated");
+                expect(err).to.equal(null);
 
                 userService.getUser({
                     username: user.username
-                }, function (err, user) {
-                    expect(err).to.equal(null, "error should equal NULL");
-                    assert.equal(user.network_status, newNetworkStatus);
+                }, function (err, users) {
+                    expect(err).to.equal(null);
+                    users.should.be.a('array');
+                    users.length.should.not.equal(0);
+                    users[0].username.should.equal(user.username);
+                    assert.equal(users[0].network_status, newNetworkStatus);
 
                     done();
                 });
@@ -132,8 +137,7 @@ describe("DB -> Users suites -> ", function () {
 
     it('delete user', function (done) {
         userService.deleteUser(userId, function (err, result) {
-            expect(err).to.equal(null, "error should equal NULL");
-            console.log(result);
+            expect(err).to.equal(null);
             done();
         });
     });

@@ -1,5 +1,6 @@
 var crypto = require('crypto'),
-    moment = require('moment');
+    moment = require('moment'),
+    logger = require('./logger-winston');
 
 module.exports = {
 
@@ -33,34 +34,64 @@ module.exports = {
         return crypto.createHmac('sha1', salt).update(password).digest('hex');
     },
 
-    handleDbQuery: function (done) {
+    handleQuery: function (getCallbackArguments) {
+        var callbackArguments = arguments;
         return function (err, result) {
+            var connection, callback;
+
+            if (typeof getCallbackArguments === 'function') {
+                callbackArguments = getCallbackArguments(result || {});
+            }
+
+            if (!callbackArguments instanceof Array || typeof callbackArguments === 'undefined') {
+                throw new Error('callback arguments should be an Array');
+            }
+
+            if (callbackArguments.length < 2) {
+                throw new Error('callback arguments should contain at least two arguments: connection, callback');
+            }
+
+            connection = callbackArguments[0];
+            callback = callbackArguments[1];
 
             if (err) {
-                done(err)
-            } else {
-                done(null, result);
+                logger.error({message: 'handleDbQuery', error: err});
+                return callback(err, connection, null);
             }
+
+            var args = [null, connection].concat(Array.prototype.slice.call(callbackArguments,2));
+            return callback.apply(null, args);
         }
     },
 
-    handleTrxDbQuery: function (done) {
+    handleDbOperation: function (done) {
         return function (err, conn, result) {
-            if (err) {
-                done(err, null);
-            } else {
-                conn.commit(function (err) {
-                    if (err) {
-                        conn.rollback(function () {
-                            throw err;
-                        });
-                    }
-                    done(null, result);
-                });
-            }
             conn.release();
-        }
+            if (err) {
+                return done({code: err.errno, message: err.code}, null);
+            }
+            return done(null, result);
+        };
     },
+
+    handleTrxDbOperation: function (done) {
+        return function (err, conn, result) {
+            console.log('handleTrxDbOperation result:' + result);
+            conn.release();
+            if (err) {
+                return done({code: err.errno, message: err.code}, null);
+            }
+            return conn.commit(function (err) {
+                if (err) {
+                    conn.rollback(function () {
+                        throw err;
+                    });
+                }
+                done(null, result);
+            });
+        }
+    }
+    ,
 
     str: function (value) {
         if (value) {
@@ -68,4 +99,5 @@ module.exports = {
         }
         return null;
     }
-};
+}
+;

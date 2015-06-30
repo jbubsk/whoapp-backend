@@ -6,7 +6,19 @@ var chai = require('chai'),
 describe("DB -> Places suites -> ", function () {
     var pool = require('../../src/db-pool'),
         placeService = require('../../src/services/places'),
-        placeId;
+        interestService = require('../../src/services/interests'),
+        placeId,
+        interestId;
+
+    before(function (done) {
+        interestService.getAll(function (err, result) {
+            expect(err).to.equal(null, "error should equal NULL");
+            result.should.be.a('array');
+            result.length.should.not.equal(0);
+            interestId = result[0].id;
+            done();
+        });
+    });
 
     it("delete all places", function (done) {
 
@@ -47,10 +59,10 @@ describe("DB -> Places suites -> ", function () {
             address: 'Москва, проспект Таганский, 5',
             latitude: 54.8342054021,
             longitude: 33.239006415,
-            interestsIds: [42, 43]
-        }, function (err, pId) {
+            interestsIds: [interestId]
+        }, function (err, result) {
             expect(err).to.equal(null, "error should equal NULL");
-            placeId = pId;
+            placeId = result;
             done();
         });
     });
@@ -88,7 +100,7 @@ describe("DB -> Places suites -> ", function () {
             phone: 'phone',
             description: description,
             proposition: 'proposition',
-            interestsIds: [42, 43]
+            interestsIds: [interestId]
         }, function (err, result) {
             expect(err).to.equal(null, "error should equal NULL");
 

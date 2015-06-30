@@ -6,15 +6,20 @@ function validPassword(password, user) {
 }
 
 function login(username, password, done) {
-    userService.getUser({username: username, password: password}, function (err, user) {
+    userService.getUser({username: username, password: password}, function (err, users) {
+        var user;
+        if (users instanceof Array && users.length > 0) {
+            user = users[0];
+        }
+
         if (err) {
-            return done(500, false);
+            return done(err, false);
         }
         if (!user) {
-            return done(400, false);
+            return done({code: 400, message: 'USER_NOT_FOUND'}, false);
         }
         if (user.salt && !validPassword(password, user)) {
-            return done(401, false);
+            return done({code: 401, message: 'USER_NOT_FOUND'}, false);
         }
         return done(null, user);
     });
@@ -26,21 +31,19 @@ function logout(username, callback) {
         network_status: 0
     }, function (err, result) {
         if (err) {
-            callback(err, null);
-        } else {
-            callback(null, result)
+            return callback(err, null);
         }
-    })
+        return callback(null, result)
+    });
 }
 
 function signup(params, callback) {
     userService.createUser(params, function (err, result) {
         if (err) {
-            callback(err, null);
-        } else {
-            callback(null, result);
+            return callback(err, null);
         }
-    })
+        return callback(null, result);
+    });
 }
 
 module.exports = {

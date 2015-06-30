@@ -5,6 +5,6 @@ module.exports = function (req, res, next) {
         next();
     } else {
         logger.info("not authenticated request: %s, session: %s", req.originalUrl, req.session.sessionID);
-        res.status(401).send();
+        res.status(401).send({message: 'NOT_AUTHORIZED'});
     }
 };

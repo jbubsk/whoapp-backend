@@ -5,7 +5,7 @@ var service = require('../../../services/interests');
 function getAllInterests(req, res, next) {
     service.getAll(function (err, interests) {
         if (err) {
-            res.status(400).send();
+            res.status(err.code).json({message: err.message});
         } else {
             res.json({result: interests});
         }
@@ -15,7 +15,7 @@ function getAllInterests(req, res, next) {
 function deleteItem(req, res, next) {
     service.remove(req.params.id, function (err, result) {
         if (err) {
-            res.status(400).json(err);
+            res.status(err.code).json({message: err.message});
         } else {
             res.json({result: "interest is deleted"});
         }
@@ -25,7 +25,7 @@ function deleteItem(req, res, next) {
 function addItem(req, res, next) {
     service.add(req.body.name, function (err, result) {
         if (err) {
-            res.status(400).json(err);
+            res.status(err.code).json({message: err.message});
         } else {
             res.json({result: result});
         }
@@ -35,7 +35,7 @@ function addItem(req, res, next) {
 function update(req, res) {
     service.update(req.body, function (err, result) {
         if (err) {
-            res.status(400).json(err);
+            res.status(err.code).json({message: err.message});
         } else {
             res.json({result: result});
         }

@@ -3,7 +3,8 @@
 var pool = require('../../db-pool'),
     logger = require('../../logger-winston'),
     async = require('async'),
-    utils = require('../../utils');
+    utils = require('../../utils'),
+    handleQuery = require('../../utils').handleQuery;
 
 /*
  * params: [name,description,address,cityId,latitude,longitude,interestsIds]
@@ -19,7 +20,7 @@ function addPlace(params, done) {
             insertPlaceLocation,
             _insertPlaceInterest
         ],
-        utils.handleTrxDbQuery(done));
+        utils.handleTrxDbOperation(done));
 
     function insertPlace(conn, callback) {
         var placeStatusId = 3,  // inactive
@@ -31,13 +32,9 @@ function addPlace(params, done) {
                 "," + placeStatusId +
                 ")";
 
-        conn.query(query, function (err, place) {
-            if (err) {
-                callback(err, conn);
-            } else {
-                callback(null, conn, place.insertId);
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result.insertId];
+        }));
     }
 
     function insertPlaceDetails(conn, placeId, callback) {
@@ -51,13 +48,9 @@ function addPlace(params, done) {
             "," + params.cityId +
             ")";
 
-        conn.query(query, function (err) {
-            if (err) {
-                callback(err, conn);
-            } else {
-                callback(null, conn, placeId);
-            }
-        });
+        conn.query(query, handleQuery(function () {
+            return [conn, callback, placeId];
+        }));
     }
 
     function insertPlaceLocation(conn, placeId, callback) {
@@ -70,13 +63,9 @@ function addPlace(params, done) {
             "," + placeId +
             ")";
 
-        conn.query(query, function (err) {
-            if (err) {
-                callback(err, conn);
-            } else {
-                callback(null, conn, placeId, params.interestsIds);
-            }
-        });
+        conn.query(query, handleQuery(function () {
+            return [conn, callback, placeId, params.interestsIds];
+        }));
     }
 
 }
@@ -88,7 +77,7 @@ function getAllPlaces(done) {
             pool.getConnection,
             getPlaces
         ],
-        utils.handleDbQuery(done));
+        utils.handleDbOperation(done));
 
     function getPlaces(conn, callback) {
         var query = "SELECT" +
@@ -101,14 +90,9 @@ function getAllPlaces(done) {
             " AND c.id = pd.city_id" +
             " AND l.place_id = p.id";
 
-        conn.query(query, function (err, places) {
-            conn.release();
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, places);
-            }
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 
@@ -119,20 +103,16 @@ function deletePlace(placeId, done) {
             deleteFromPlaceDetails,
             deleteFromPlace
         ],
-        utils.handleTrxDbQuery(done));
+        utils.handleTrxDbOperation(done));
 
     function deleteFromPlaceDetails(conn, callback) {
         var query = "DELETE FROM place_details" +
             " WHERE place_id=" +
             placeId;
 
-        conn.query(query, function (err, result) {
-            if (err) {
-                callback(err, conn, null);
-            } else {
-                callback(null, conn);
-            }
-        });
+        conn.query(query, handleQuery(function () {
+            return [conn, callback];
+        }));
     }
 
     function deleteFromPlace(conn, callback) {
@@ -140,13 +120,9 @@ function deletePlace(placeId, done) {
             " WHERE id=" +
             placeId;
 
-        conn.query(query, function (err, result) {
-            if (err) {
-                callback(err, conn, null);
-            } else {
-                callback(null, conn, "place is deleted");
-            }
-        });
+        conn.query(query, handleQuery(function () {
+            return [conn, callback];
+        }));
     }
 }
 
@@ -156,7 +132,7 @@ function getPlace(placeId, done) {
             pool.getConnection,
             getPlaceById
         ],
-        utils.handleDbQuery(done));
+        utils.handleDbOperation(done));
 
     function getPlaceById(conn, callback) {
         var query = "SELECT p.id, p.name, ps.name as status, pd.address, pd.description, pd.site, pd.phone, pd.proposition, GROUP_CONCAT(i.id) as interestsIds" +
@@ -171,13 +147,9 @@ function getPlace(placeId, done) {
             " ON i.id=pi.interests_id" +
             " WHERE p.id=" + placeId;
 
-        conn.query(query, function (err, place) {
-            conn.release();
-            if (err) {
-                return callback(err, null);
-            }
-            return callback(null, place);
-        });
+        conn.query(query, handleQuery(function (result) {
+            return [conn, callback, result];
+        }));
     }
 }
 
@@ -196,7 +168,7 @@ function updatePlace(params, done) {
             deletePlaceInterests,
             _insertPlaceInterest
         ],
-        utils.handleTrxDbQuery(done));
+        utils.handleTrxDbOperation(done));
 
     function updatePlaceTable(conn, callback) {
         var query = "UPDATE place" +
@@ -204,12 +176,9 @@ function updatePlace(params, done) {
             " name=" + utils.str(params.name) +
             " WHERE id=" + placeId;
 
-        conn.query(query, function (err) {
-            if (err) {
-                return callback(err, conn);
-            }
-            return callback(null, conn);
-        });
+        conn.query(query, handleQuery(function () {
+            return [conn, callback];
+        }));
     }
 
     function updatePlaceDetailsTable(conn, callback) {
@@ -221,24 +190,18 @@ function updatePlace(params, done) {
             " ,proposition=" + utils.str(params.proposition) +
             " WHERE place_id=" + placeId;
 
-        conn.query(query, function (err) {
-            if (err) {
-                return callback(err, conn);
-            }
-            return callback(null, conn);
-        });
+        conn.query(query, handleQuery(function () {
+            return [conn, callback];
+        }));
     }
 
     function deletePlaceInterests(conn, callback) {
-        var deleteQuery = "DELETE FROM place_interest" +
+        var query = "DELETE FROM place_interest" +
             " WHERE place_id=" + placeId;
 
-        conn.query(deleteQuery, function (err) {
-            if (err) {
-                return callback(err, conn);
-            }
-            return callback(null, conn, placeId, params.interestsIds);
-        });
+        conn.query(query, handleQuery(function () {
+            return [conn, callback, placeId, params.interestsIds];
+        }));
     }
 }
 
@@ -255,6 +218,7 @@ function _insertPlaceInterest(conn, placeId, interestsIds, callback) {
             " VALUES" + values;
 
         conn.query(query, function (err) {
+            console.log('_insertPlaceInterest err:' + err);
             if (err) {
                 return callback(err, conn);
             }

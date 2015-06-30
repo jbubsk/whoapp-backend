@@ -5,15 +5,11 @@ function login(req, res, next) {
     passport.authenticate('local', function (err, user) {
 
         if (err) {
-            logger.error(err);
-            return res.status(err).json({
-                code: 100,
-                result: 'db connection error'
-            });
+            return res.status(err.code).json({message: err.message});
         }
         if (!user) {
             return res.status(400).json({
-                result: 'user/pwd is not found'
+                message: 'USER_PWD_NOT_FOUND'
             });
         }
 
@@ -22,7 +18,7 @@ function login(req, res, next) {
                 return next(err);
             }
             return res.json({
-                result: {username: user.username}
+                result: user.username
             });
         });
     })(req, res, next);

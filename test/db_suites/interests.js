@@ -3,7 +3,8 @@
 var chai = require('chai'),
     assert = chai.assert,
     expect = chai.expect,
-    should = chai.should();
+    should = chai.should(),
+    logger = require('../../src/logger-winston');
 
 describe('DB -> Interests suites -> ', function () {
     var pool = require('../../src/db-pool'),
@@ -24,8 +25,8 @@ describe('DB -> Interests suites -> ', function () {
     it('add first interest', function (done) {
         interestService.add(name, function (err, result) {
             expect(err).to.equal(null);
-            expect(result.id).to.be.a('number');
-            interestId = result.id;
+            expect(result).to.be.a('number');
+            interestId = result;
             done();
         });
     });
@@ -47,8 +48,8 @@ describe('DB -> Interests suites -> ', function () {
 
         interestService.add(name + '2', function (err, result) {
             expect(err).to.equal(null, 'error should equal NULL');
-            expect(result.id).not.to.equal(null, 'interestId should not equal NULL');
-            interestId = result.id;
+            expect(result).not.to.equal(null, 'interestId should not equal NULL');
+            interestId = result;
             done();
         });
     });
@@ -66,7 +67,7 @@ describe('DB -> Interests suites -> ', function () {
     it('delete interest by id', function (done) {
 
         interestService.remove(interestId, function (err, result) {
-            expect(err).to.equal(null, 'error should equal NULL');
+            expect(err).to.equal(null);
             done();
         });
     });
@@ -75,7 +76,9 @@ describe('DB -> Interests suites -> ', function () {
 
         interestService.getByName(name, function (err, interest) {
             expect(err).to.equal(null, 'error should equal NULL');
-            expect(name).to.equal(interest.name);
+            interest.should.be.a('array');
+            interest.should.have.length(1);
+            expect(name).to.equal(interest[0].name);
             done();
         });
     });
