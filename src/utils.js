@@ -1,5 +1,6 @@
 var crypto = require('crypto'),
     moment = require('moment'),
+    mysql = require('mysql'),
     logger = require('./logger-winston');
 
 module.exports = {
@@ -95,7 +96,7 @@ module.exports = {
 
     str: function (value) {
         if (value) {
-            return "'" + value + "'";
+            return mysql.escape(value);
         }
         return null;
     }

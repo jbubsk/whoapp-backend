@@ -28,7 +28,7 @@ function addPlace(params, done) {
                 " (name, place_status_id)" +
                 " values" +
                 " (" +
-                "'" + params.name + "'" +
+                utils.str(params.name) +
                 "," + placeStatusId +
                 ")";
 
@@ -39,11 +39,11 @@ function addPlace(params, done) {
 
     function insertPlaceDetails(conn, placeId, callback) {
         var query = "INSERT INTO place_details" +
-            " (description ,address ,place_id ,city_id)" +
+            " (description, address, phone, place_id, city_id)" +
             " values" +
-            " (" +
-            "'" + (params.description || '') + "'" +
-            ",'" + params.address + "'" +
+            " (" + +utils.str(params.description) +
+            "," + utils.str(params.address) +
+            "," + utils.str(params.phone) +
             "," + placeId +
             "," + params.cityId +
             ")";
@@ -81,7 +81,7 @@ function getAllPlaces(done) {
 
     function getPlaces(conn, callback) {
         var query = "SELECT" +
-            " p.id, p.name, pd.description, c.name_ru as city, pd.address, l.latitude, l.longitude" +
+            " p.id, p.name, pd.description, c.name_ru as city, pd.address, pd.phone, l.latitude, l.longitude" +
             " FROM place as p" +
             " JOIN place_details as pd" +
             " JOIN city as c" +
@@ -135,7 +135,7 @@ function getPlace(placeId, done) {
         utils.handleDbOperation(done));
 
     function getPlaceById(conn, callback) {
-        var query = "SELECT p.id, p.name, ps.name as status, pd.address, pd.description, pd.site, pd.phone, pd.proposition, GROUP_CONCAT(i.id) as interestsIds" +
+        var query = "SELECT p.id, p.name, ps.name as status, pd.address, pd.phone, pd.description, pd.site, pd.phone, pd.proposition, GROUP_CONCAT(i.id) as interestsIds" +
             " FROM place as p" +
             " JOIN place_status as ps" +
             " ON p.place_status_id=ps.id" +

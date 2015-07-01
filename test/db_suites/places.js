@@ -1,12 +1,14 @@
 var chai = require('chai'),
     assert = chai.assert,
     expect = chai.expect,
-    should = chai.should();
+    should = chai.should(),
+    pool = require('../../src/db-pool'),
+    placeService = require('../../src/services/places'),
+    interestService = require('../../src/services/interests'),
+    logger = require('../../src/logger-winston');
 
 describe("DB -> Places suites -> ", function () {
-    var pool = require('../../src/db-pool'),
-        placeService = require('../../src/services/places'),
-        interestService = require('../../src/services/interests'),
+    var phone = '89854550000',
         placeId,
         interestId;
 
@@ -53,10 +55,11 @@ describe("DB -> Places suites -> ", function () {
     it("add second place", function (done) {
 
         placeService.addPlace({
-            name: 'Не Лучшее место',
+            name: "Не Лучшее' место",
             city: 'Москва',
             cityId: 13658,
             address: 'Москва, проспект Таганский, 5',
+            phone: phone,
             latitude: 54.8342054021,
             longitude: 33.239006415,
             interestsIds: [interestId]
@@ -83,8 +86,8 @@ describe("DB -> Places suites -> ", function () {
             expect(err).to.equal(null, "error should equal NULL");
             expect(result[0].id).to.equal(placeId, "result[0].id should equal " + placeId);
             result[0].interestsIds.should.be.a("string", "result[0].description should be a string");
-            console.log('------');
-            console.log(result[0].interestsIds);
+            result[0].phone.should.equal(phone);
+            logger.debug(result[0].name);
             done();
         });
     });
