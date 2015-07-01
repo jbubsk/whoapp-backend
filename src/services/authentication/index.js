@@ -1,5 +1,6 @@
 var userService = require('../users'),
-    utils = require('../../utils');
+    utils = require('../../utils'),
+    handleQuery = utils.handleQuery();
 
 function validPassword(password, user) {
     return utils.encryptPwd(password, user.salt) === user.password;
@@ -19,7 +20,7 @@ function login(username, password, done) {
             return done({code: 400, message: 'USER_NOT_FOUND'}, false);
         }
         if (user.salt && !validPassword(password, user)) {
-            return done({code: 401, message: 'USER_NOT_FOUND'}, false);
+            return done({code: 400, message: 'USER_NOT_FOUND'}, false);
         }
         return done(null, user);
     });

@@ -4,7 +4,7 @@ var logger = require('../../../logger-winston'),
 function getCityIdByName(req, res, next) {
     cityService.getCityIdByName(req.query, function (err, cityId) {
         if (err) {
-            res.status(err.code).json({message: err.message});
+            res.status(err.status || 400).json({message: err.message, code: err.code});
         } else {
             res.json({result: cityId});
         }
@@ -12,11 +12,11 @@ function getCityIdByName(req, res, next) {
 }
 
 function getCitiesByName(req, res, next) {
-    cityService.getCitiesByName(req.params.name, function (err, cityId) {
+    cityService.getCitiesByName(req.params.name, function (err, cities) {
         if (err) {
-            res.status(err.code).json({message: err.message});
+            res.status(err.status || 400).json({message: err.message, code: err.code});
         } else {
-            res.json({result: cityId});
+            res.json({result: cities});
         }
     })
 }

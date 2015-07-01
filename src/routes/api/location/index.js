@@ -6,7 +6,7 @@ function getLocation(req, res, next) {
 
     locationServices.getLocation(req.body, function (err, result) {
         if (err) {
-            res.status(err.code).json({message: err.message});
+            res.status(err.status || 400).json({message: err.message, code: err.code});
         }
         res.json({
             result: result
@@ -20,7 +20,7 @@ function setLocation(req, res, next) {
 
     locationServices.setLocation(req.body, function (err, result) {
         if (err) {
-            res.status(err.code).json({message: err.message});
+            res.status(err.status || 400).json({message: err.message, code: err.code});
         }
         res.json({
             result: result
