@@ -7,7 +7,6 @@ module.exports = function (req, res, next) {
             if (err) {
                 res.status(err.status || 400).json({message: err.message, code: err.code});
             } else {
-                req.logout();
                 res.json({
                     result: "user is logged out"
                 });

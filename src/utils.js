@@ -67,6 +67,9 @@ module.exports = {
 
     handleDbOperation: function (done) {
         return function (err, conn, result) {
+            if(!conn){
+                return done({status: 500, message: 'DB_CONNECT_ERROR'}, null);
+            }
             conn.release();
             if (err) {
                 return done({code: err.errno, message: err.code}, null);

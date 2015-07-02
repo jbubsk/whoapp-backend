@@ -8,7 +8,7 @@ function setupListeners(server) {
     io.set('origins', '*:*');
     //io.set("transports", ["websocket"]);
     io.on('connection', function (socket) {
-        logger.info("---> connected with client through socket");
+        logger.info("connected with client through socket");
         socket.on('user:connected', function (username) {
             io.emit('user:connected', 'user ' + username + ' is connected');
         });

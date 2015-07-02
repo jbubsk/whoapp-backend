@@ -2,9 +2,9 @@
 
 var express = require('express'),
     router = express.Router(),
-    signup = require('./signup/index'),
-    login = require('./login/index'),
-    logout = require('./logout/index'),
+    signup = require('./signup'),
+    login = require('./login'),
+    logout = require('./logout'),
     logger = require('../../logger-winston');
 
 router.post('/login', login);

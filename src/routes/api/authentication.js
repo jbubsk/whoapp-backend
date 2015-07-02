@@ -1,10 +1,10 @@
-var logger = require('../../../logger-winston');
+var logger = require('../../logger-winston');
 
 module.exports = function (req, res, next) {
     if (req.user) {
         next();
     } else {
-        logger.info("not authenticated request: %s, session: %s", req.originalUrl, req.session.sessionID);
+        logger.info("!!! not authenticated request");
         res.status(401).send({message: 'NOT_AUTHORIZED'});
     }
 };

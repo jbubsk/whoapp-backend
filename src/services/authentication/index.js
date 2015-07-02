@@ -1,6 +1,7 @@
+"use strict";
+
 var userService = require('../users'),
-    utils = require('../../utils'),
-    handleQuery = utils.handleQuery();
+    utils = require('../../utils');
 
 function validPassword(password, user) {
     return utils.encryptPwd(password, user.salt) === user.password;

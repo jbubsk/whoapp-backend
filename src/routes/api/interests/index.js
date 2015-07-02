@@ -2,7 +2,7 @@
 
 var service = require('../../../services/interests');
 
-function getAllInterests(req, res, next) {
+function getAll(req, res, next) {
     service.getAll(function (err, interests) {
         if (err) {
             res.status(err.status || 400).json({message: err.message, code: err.code});
@@ -43,7 +43,7 @@ function update(req, res) {
 }
 
 module.exports = {
-    getAll: getAllInterests,
+    getAll: getAll,
     remove: deleteItem,
     add: addItem,
     update: update

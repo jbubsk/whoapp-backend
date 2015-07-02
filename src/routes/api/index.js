@@ -1,14 +1,14 @@
 var express = require('express'),
     router = express.Router(),
-    authorization = require('./authentication/index'),
-    location = require('./location/index'),
-    interests = require('./interests/index'),
-    cities = require('./cities/index'),
-    places = require('./places/index'),
-    users = require('./users/index');
+    authentication = require('./authentication'),
+    location = require('./location'),
+    interests = require('./interests'),
+    cities = require('./cities'),
+    places = require('./places'),
+    users = require('./users');
 
 if (process.env.NODE_ENV !== 'test') {
-    router.use(authorization);
+    router.use(authentication);
 }
 
 router.get('/users', users.getAllUsers);
