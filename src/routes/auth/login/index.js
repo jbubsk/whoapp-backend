@@ -23,7 +23,7 @@ function login(req, res, next) {
 
         logger.jwt('profile for signing: ', profile);
 
-        var token = jwt.sign(profile, config.secret, {expiresInMinutes: 5});
+        var token = jwt.sign(profile, config.secret, {expiresInMinutes: config.jwtExpirationInMinutes});
 
         return res.json({token: token});
     });

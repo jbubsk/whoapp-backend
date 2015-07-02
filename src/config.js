@@ -16,5 +16,6 @@ module.exports = {
         password: process.env.OPENSHIFT_MYSQL_DB_PASSWORD,
         poolSize: 100
     },
-    secret: 'spp11Q_5zorro'
+    secret: 'spp11Q_5zorro',
+    jwtExpirationInMinutes: process.env.JWT_TOKEN_EXPIRATION || 10
 };
