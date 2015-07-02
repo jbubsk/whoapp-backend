@@ -35,7 +35,7 @@ var logger = new (winston.Logger)({
             colorize: true,
             silent: false,
             timestamp: function () {
-                return moment().format('DD.MM.YYYY hh:mm:ss:SSS');
+                return moment().format('DD-MM-YYYY hh:mm:ss:SSS');
             },
             formatter: function (options) {
                 return options.timestamp() + ' ' + options.level.toUpperCase() + ' ' + (undefined !== options.message ? options.message : '') +

@@ -1,11 +1,9 @@
 module.exports = function (logger) {
     return function (req, res, next) {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-        if (logger && req.method === 'OPTIONS') {
-            if (req.headers['x-forwarded-for']) {
-                logger.debug('x-forwarded-for: ' + req.headers['x-forwarded-for']);
-            }
-            logger.debug('user-agent: ' + req.headers['user-agent']);
+        if (logger && req.method !== 'OPTIONS') {
+            logger.trace(req.method + ':' + req.originalUrl, {userAgent: req.headers['user-agent'], remoteAddress: ip});
         }
 
         res.header("Access-Control-Allow-Origin", req.headers.origin);

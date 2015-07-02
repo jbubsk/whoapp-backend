@@ -21,9 +21,8 @@ function login(req, res, next) {
             ip: ip
         };
 
-        logger.jwt(' profile for signing: ', profile);
+        logger.jwt('profile for signing: ', profile);
 
-        // We are sending the profile inside the token
         var token = jwt.sign(profile, config.secret, {expiresInMinutes: 5});
 
         return res.json({token: token});

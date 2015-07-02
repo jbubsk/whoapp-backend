@@ -20,7 +20,7 @@ router.post('/location', location.setLocation);
 
 router.get('/interests', interests.getAll);
 router.post('/interests', interests.add);
-router.put('/interests', interests.update);
+router.put('/interests/:id', interests.update);
 router.delete('/interests/:id', interests.remove);
 
 router.get('/places', places.getPlaces);
