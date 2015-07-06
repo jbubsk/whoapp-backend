@@ -1,5 +1,8 @@
+"use strict";
+
 var express = require('express'),
     app = express(),
+    html5static = require('./src/middleware/html5static'),
     http = require('http'),
     server = http.createServer(app),
     logger = require('./src/logger-winston'),
@@ -13,6 +16,7 @@ var express = require('express'),
     apiRouter = require('./src/routes/api'),
     authRouter = require('./src/routes/auth');
 
+app.use(html5static('public'));
 
 app.use(corp(logger));
 

@@ -1,6 +1,7 @@
 "use strict";
 
-var userService = require('../../../services/users');
+var userService = require('../../../services/users'),
+    responseHandler = require('../../../middleware/response.handler');
 
 function createUser(req, res) {
     userService.createUser(req.body, function (err, result) {
@@ -14,11 +15,7 @@ function createUser(req, res) {
 
 function getAllUsers(req, res) {
     userService.getAllUsers(function (err, result) {
-        if (err) {
-            res.status(err.status || 400).json({message: err.message, code: err.code});
-        } else {
-            res.json({result: result});
-        }
+        responseHandler(err, result);
     })
 }
 
