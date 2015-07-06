@@ -13,7 +13,15 @@ module.exports = function st(root, options) {
 
         var originalUrl = req.originalUrl;
 
-        if (hasUrl('/styles') || hasUrl('/scripts') || hasUrl('/images')) {
+        if (hasUrl('/api/') || hasUrl('/auth/')) {
+            logger.debug(originalUrl);
+            return next();
+        }
+
+        if (hasUrl('/styles/') ||
+            hasUrl('/scripts/') ||
+            hasUrl('/images/' ||
+            hasUrl('/favicon'))) {
 
             if (hasUrl('/scripts')) {
                 cutIndex = originalUrl.indexOf('/scripts');
@@ -27,19 +35,12 @@ module.exports = function st(root, options) {
             return express.static('public')(req, res, next);
         }
 
-        if (!hasUrl('/api') || !hasUrl('/auth')) {
-            if ('GET' != req.method && 'HEAD' != req.method) return next();
-
-            send(req, '/', {
-                maxage: options.maxAge || 0,
-                root: root,
-                index: options.index || 'index.html'
-            })
-                .pipe(res);
-
-        } else {
-            next();
-        }
+        return send(req, '/', {
+            maxage: options.maxAge || 0,
+            root: root,
+            index: options.index || 'index.html'
+        })
+            .pipe(res);
 
         function hasUrl(partOfUrl) {
             return originalUrl.indexOf(partOfUrl) > -1;

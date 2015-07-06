@@ -16,9 +16,9 @@ var express = require('express'),
     apiRouter = require('./src/routes/api'),
     authRouter = require('./src/routes/auth');
 
-app.use(html5static('public'));
+app.use(corp());
 
-app.use(corp(logger));
+app.use(html5static('public'));
 
 app.use(accessLogger());
 
