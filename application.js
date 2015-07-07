@@ -18,7 +18,9 @@ var express = require('express'),
 
 app.use(corp());
 
-app.use(html5static('public'));
+if (process.env.PAGE_HOSTING === 'true') {
+    app.use(html5static('public'));
+}
 
 app.use(accessLogger());
 
