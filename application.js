@@ -2,7 +2,6 @@
 
 var express = require('express'),
     app = express(),
-    html5static = require('./src/middleware/html5static'),
     http = require('http'),
     server = http.createServer(app),
     logger = require('./src/logger-winston'),
@@ -17,10 +16,6 @@ var express = require('express'),
     authRouter = require('./src/routes/auth');
 
 app.use(corp());
-
-if (process.env.PAGE_HOSTING === 'true') {
-    app.use(html5static('public'));
-}
 
 app.use(accessLogger());
 

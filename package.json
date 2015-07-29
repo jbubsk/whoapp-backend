@@ -24,6 +24,7 @@
   "scripts": {
     "dev": "NODE_ENV=development gulp dev",
     "dev-hosting": "PAGE_HOSTING=true NODE_ENV=development gulp dev",
+    "prod-hosting": "PAGE_HOSTING=true NODE_ENV=production gulp dev",
     "database": "clear && rhc app restart whoappbackend && rhc port-forward whoappbackend",
     "dev-debug": "NODE_ENV=development gulp dev_debug",
     "dev-debug-brk": "NODE_ENV=development node --debug-brk=5858 server.js",
